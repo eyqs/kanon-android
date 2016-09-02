@@ -12,10 +12,10 @@
 bin/
 gen/
 out/
+build/
 
 # Gradle files
 .gradle/
-build/
 app/build/
 
 # Local configuration file (sdk path, etc)
@@ -35,6 +35,7 @@ captures/
 
 # Intellij
 *.iml
+.idea/libraries/
 .idea/workspace.xml
 
 # Keystore files
