@@ -5,18 +5,64 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ImageView android:id="@+id/clef_image"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <ImageView android:id="@+id/clef_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/treble" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#000" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="21dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#000" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="21dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#000" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="21dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#000" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="21dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#000" />
+        </LinearLayout>
+    </RelativeLayout>
+    <Space
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/treble" />
+        android:layout_weight="1" />
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <EditText android:id="@+id/edit_message"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:hint="@string/edit_message" />
         <Button
             android:layout_width="wrap_content"
