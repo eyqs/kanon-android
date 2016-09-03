@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "ca.eyqs.kanon.MESSAGE";
@@ -16,6 +18,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LinearLayout mainStaff = (LinearLayout) findViewById(R.id.main_staff);
+        ImageView randomNote = new ImageView(this);
+        randomNote.setImageResource(R.drawable.note);
+        mainStaff.addView(randomNote);
     }
 
     /** Called when the user clicks the Send button */
