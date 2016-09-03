@@ -19,36 +19,37 @@
             android:orientation="vertical">
             <View
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="#000" />
+                android:layout_height="@dimen/staff_line_thickness"
+                android:padding="10dp"
+                android:background="@color/colorStaffLine" />
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="21dp" />
+                android:layout_height="@dimen/staff_space_thickness" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="#000" />
+                android:layout_height="@dimen/staff_line_thickness"
+                android:background="@color/colorStaffLine" />
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="21dp" />
+                android:layout_height="@dimen/staff_space_thickness" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="#000" />
+                android:layout_height="@dimen/staff_line_thickness"
+                android:background="@color/colorStaffLine" />
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="21dp" />
+                android:layout_height="@dimen/staff_space_thickness" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="#000" />
+                android:layout_height="@dimen/staff_line_thickness"
+                android:background="@color/colorStaffLine" />
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="21dp" />
+                android:layout_height="@dimen/staff_space_thickness" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="#000" />
+                android:layout_height="@dimen/staff_line_thickness"
+                android:background="@color/colorStaffLine" />
         </LinearLayout>
     </RelativeLayout>
     <Space
