@@ -2,6 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="staff_line_thickness">3dp</dimen>
-    <dimen name="staff_space_thickness">21dp</dimen>
+    <dimen name="clef_width">54dp</dimen>
+    <dimen name="clef_height">152dp</dimen>
+    <dimen name="staff_line_thickness">2dp</dimen>
+    <dimen name="staff_space_thickness">18dp</dimen>
 </resources>

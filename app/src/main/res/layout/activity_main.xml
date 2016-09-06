@@ -10,18 +10,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
         <ImageView android:id="@+id/clef_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/clef_width"
+            android:layout_height="@dimen/clef_height"
             android:src="@drawable/treble" />
         <LinearLayout android:id="@+id/main_staff"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:orientation="vertical">
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/staff_line_thickness"
-                android:padding="10dp"
+                android:layout_marginTop="35dp"
                 android:background="@color/colorStaffLine" />
             <Space
                 android:layout_width="match_parent"
