@@ -19,16 +19,15 @@
             <ImageView android:id="@+id/clef_image"
                 android:layout_width="@dimen/clef_width"
                 android:layout_height="@dimen/clef_height"
+                android:layout_gravity="center_vertical"
                 android:src="@drawable/treble" />
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5" />
-            <ImageView android:id="@+id/note_image"
-                android:layout_width="@dimen/note_width"
-                android:layout_height="@dimen/note_height"
-                android:layout_marginTop="35dp"
-                android:src="@drawable/note" />
+            <ca.eyqs.kanon.NotesView android:id="@+id/notes"
+                android:layout_width="@dimen/notes_width"
+                android:layout_height="@dimen/notes_height" />
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

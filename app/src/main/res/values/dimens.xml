@@ -5,6 +5,10 @@
     <dimen name="clef_padding">16dp</dimen>
     <dimen name="clef_width">54dp</dimen>
     <dimen name="clef_height">152dp</dimen>
+    <dimen name="notes_width">80dp</dimen>
+    <!-- notes_width = 2 * note_width -->
+    <dimen name="notes_height">202dp</dimen>
+    <!-- notes_height = 11 * line-thickness + 10 * space_thickness -->
     <dimen name="note_width">40dp</dimen>
     <dimen name="note_height">22dp</dimen>
     <dimen name="staff_line_thickness">2dp</dimen>
