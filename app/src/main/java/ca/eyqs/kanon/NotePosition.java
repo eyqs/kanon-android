@@ -1,16 +1,16 @@
 package ca.eyqs.kanon;
 
 public class NotePosition {
-    public float x;
-    public float y;
-    public NotePosition(float position, float height) {
+    public int x;
+    public int y;
+    public NotePosition(int position, int height) {
         x = position;
         y = height;
     }
-    public float getX() {
+    public int getX() {
         return x;
     }
-    public float getY() {
+    public int getY() {
         return y;
     }
 }
