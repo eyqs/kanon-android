@@ -11,6 +11,7 @@
     <!-- notes_height = 11 * line-thickness + 10 * space_thickness -->
     <dimen name="note_width">40dp</dimen>
     <dimen name="note_height">22dp</dimen>
+    <dimen name="second_offset">36dp</dimen>
     <dimen name="staff_line_thickness">2dp</dimen>
     <dimen name="staff_space_thickness">18dp</dimen>
     <dimen name="staff_height">82dp</dimen>
