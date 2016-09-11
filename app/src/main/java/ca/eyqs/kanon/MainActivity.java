@@ -1,31 +1,77 @@
 package ca.eyqs.kanon;
 
-import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "ca.eyqs.kanon.MESSAGE";
+    private RadioGroup size1;
+    private RadioGroup size2;
+    private RadioGroup size3;
+    private boolean isChecking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
+        size1 = (RadioGroup) findViewById(R.id.interval_size_one);
+        size2 = (RadioGroup) findViewById(R.id.interval_size_two);
+        size3 = (RadioGroup) findViewById(R.id.interval_size_three);;
+        size1.setOnCheckedChangeListener(
+            new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int id) {
+                    if (id != -1 && isChecking) {
+                        isChecking = false;
+                        size2.clearCheck();
+                        size3.clearCheck();
+                    }
+                    isChecking = true;
+                }
+            }
+        );
+        size2.setOnCheckedChangeListener(
+            new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int id) {
+                    if (id != -1 && isChecking) {
+                        isChecking = false;
+                        size1.clearCheck();
+                        size3.clearCheck();
+                    }
+                    isChecking = true;
+                }
+            }
+        );
+        size3.setOnCheckedChangeListener(
+            new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int id) {
+                    if (id != -1 && isChecking) {
+                        isChecking = false;
+                        size2.clearCheck();
+                        size1.clearCheck();
+                    }
+                    isChecking = true;
+                }
+            }
+        );
     }
 
-    /** Called when the user clicks the Send button */
-    public void sendMessage(View view) {
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
+    /** Called when the user pushes any button */
+    public void pushButton(View view) {
+        System.out.println(view.getTag());;
         NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.addNote(0, Integer.valueOf(message));
+        Random rand = new Random();
+        notes.addNote(0, rand.nextInt(11) - 5);
         notes.invalidate();
     }
 

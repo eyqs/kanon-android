@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorStaffLine">#000000</color>
     <color name="colorBackground">#FFFFFF</color>
+    <color name="colorPushed">#CCCCCC</color>
 </resources>

@@ -16,4 +16,5 @@
     <dimen name="staff_space_thickness">18dp</dimen>
     <dimen name="staff_height">82dp</dimen>
     <!-- staff_height = 5 * line_thickness + 4 * space_thickness -->
+    <dimen name="button_height">50dp</dimen>
 </resources>
