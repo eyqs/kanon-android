@@ -1,20 +1,29 @@
 package ca.eyqs.kanon;
 
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    private RadioGroup qualGroup;
     private RadioGroup size1;
     private RadioGroup size2;
     private RadioGroup size3;
-    private boolean isChecking = false;
+    private boolean isChecking = true;
+    private char quality = '0';
+    private int size = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +31,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
+        qualGroup = (RadioGroup) findViewById(R.id.interval_quality);
+        qualGroup.setOnCheckedChangeListener(
+            new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int id) {
+                    if (id != -1) {
+                        RadioButton button = (RadioButton) findViewById(id);
+                        quality = ((String) button.getTag()).charAt(0);
+                    }
+                }
+            }
+        );
         size1 = (RadioGroup) findViewById(R.id.interval_size_one);
         size2 = (RadioGroup) findViewById(R.id.interval_size_two);
-        size3 = (RadioGroup) findViewById(R.id.interval_size_three);;
+        size3 = (RadioGroup) findViewById(R.id.interval_size_three);
         size1.setOnCheckedChangeListener(
             new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -33,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
                         isChecking = false;
                         size2.clearCheck();
                         size3.clearCheck();
+                        RadioButton button = (RadioButton) findViewById(id);
+                        size = Integer.parseInt((String) button.getTag());
+                        isChecking = true;
                     }
-                    isChecking = true;
                 }
             }
         );
@@ -44,10 +67,12 @@ public class MainActivity extends AppCompatActivity {
                 public void onCheckedChanged(RadioGroup group, int id) {
                     if (id != -1 && isChecking) {
                         isChecking = false;
-                        size1.clearCheck();
                         size3.clearCheck();
+                        size1.clearCheck();
+                        RadioButton button = (RadioButton) findViewById(id);
+                        size = Integer.parseInt((String) button.getTag());
+                        isChecking = true;
                     }
-                    isChecking = true;
                 }
             }
         );
@@ -57,10 +82,12 @@ public class MainActivity extends AppCompatActivity {
                 public void onCheckedChanged(RadioGroup group, int id) {
                     if (id != -1 && isChecking) {
                         isChecking = false;
-                        size2.clearCheck();
                         size1.clearCheck();
+                        size2.clearCheck();
+                        RadioButton button = (RadioButton) findViewById(id);
+                        size = Integer.parseInt((String) button.getTag());
+                        isChecking = true;
                     }
-                    isChecking = true;
                 }
             }
         );
@@ -68,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user pushes any button */
     public void pushButton(View view) {
-        System.out.println(view.getTag());;
+        System.out.println(quality);
+        System.out.println(size);
         NotesView notes = (NotesView) findViewById(R.id.notes);
         Random rand = new Random();
         notes.addNote(0, rand.nextInt(11) - 5);
