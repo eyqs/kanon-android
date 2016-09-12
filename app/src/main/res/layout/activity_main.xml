@@ -12,14 +12,14 @@
         <LinearLayout android:id="@+id/staff_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
             <Space
                 android:layout_width="@dimen/clef_padding"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
             <ImageView android:id="@+id/clef_image"
                 android:layout_width="@dimen/clef_width"
                 android:layout_height="@dimen/clef_height"
-                android:layout_gravity="center_vertical"
                 android:src="@drawable/treble" />
             <Space
                 android:layout_width="0dp"
@@ -35,8 +35,8 @@
         </LinearLayout>
         <LinearLayout android:id="@+id/main_staff"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/staff_height"
-            android:layout_centerVertical="true"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:orientation="vertical">
             <View
                 android:layout_width="match_parent"
@@ -298,4 +298,9 @@
             android:gravity="center"
             android:onClick="pushButton" />
     </RadioGroup>
+    <Button android:id="@+id/settings_btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height"
+        android:text="@string/settings"
+        android:onClick="changeSettings" />
 </LinearLayout>
