@@ -42,6 +42,10 @@ public class NotesView extends View {
         note_positions.add(new NotePosition(x, y));
     }
 
+    public void clear() {
+        note_positions.clear();
+    }
+
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // Draw notes from bottom to top, to avoid overlapping white borders

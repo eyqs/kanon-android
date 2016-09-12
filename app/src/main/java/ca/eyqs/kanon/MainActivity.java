@@ -95,17 +95,27 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user pushes any button */
     public void pushButton(View view) {
-        System.out.println(quality);
-        System.out.println(size);
+        generateInterval();
+    }
+
+    private void generateInterval() {
         NotesView notes = (NotesView) findViewById(R.id.notes);
+        notes.clear();
         Random rand = new Random();
-        notes.addNote(0, rand.nextInt(11) - 5);
+        int a = rand.nextInt(11) - 5;
+        int b = rand.nextInt(11) - 5;
+        if (Math.abs(a - b) <= 1) {
+            notes.addNote(0, Math.min(a, b));
+            notes.addNote(1, Math.max(a, b));
+        } else {
+            notes.addNote(0, a);
+            notes.addNote(0, b);
+        }
         notes.invalidate();
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */
-    private AudioTrack generateTone(double freqHz, int durationMs)
-    {
+    private AudioTrack generateTone(double freqHz, int durationMs) {
         int count = (int) (44100.0 * 2.0 * (durationMs / 1000.0)) & ~1;
         short[] samples = new short[count];
         for (int i = 0; i < count; i += 2) {
