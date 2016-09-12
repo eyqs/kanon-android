@@ -1,16 +1,11 @@
 package ca.eyqs.kanon;
 
-import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -22,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup size2;
     private RadioGroup size3;
     private boolean isChecking = true;
+    private char qualityGuess = '0';
+    private int sizeGuess = 0;
     private char quality = '0';
     private int size = 0;
 
@@ -38,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onCheckedChanged(RadioGroup group, int id) {
                     if (id != -1) {
                         RadioButton button = (RadioButton) findViewById(id);
-                        quality = ((String) button.getTag()).charAt(0);
+                        qualityGuess = ((String) button.getTag()).charAt(0);
                     }
                 }
             }
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         size2.clearCheck();
                         size3.clearCheck();
                         RadioButton button = (RadioButton) findViewById(id);
-                        size = Integer.parseInt((String) button.getTag());
+                        sizeGuess = Integer.parseInt((String) button.getTag());
                         isChecking = true;
                     }
                 }
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                         size3.clearCheck();
                         size1.clearCheck();
                         RadioButton button = (RadioButton) findViewById(id);
-                        size = Integer.parseInt((String) button.getTag());
+                        sizeGuess = Integer.parseInt((String) button.getTag());
                         isChecking = true;
                     }
                 }
@@ -85,17 +82,28 @@ public class MainActivity extends AppCompatActivity {
                         size1.clearCheck();
                         size2.clearCheck();
                         RadioButton button = (RadioButton) findViewById(id);
-                        size = Integer.parseInt((String) button.getTag());
+                        sizeGuess = Integer.parseInt((String) button.getTag());
                         isChecking = true;
                     }
                 }
             }
         );
+        generateInterval();
     }
 
     /** Called when the user pushes any button */
     public void pushButton(View view) {
-        generateInterval();
+        if (qualityGuess != '0' && sizeGuess != 0) {
+            qualGroup.clearCheck();
+            size1.clearCheck();
+            size2.clearCheck();
+            size3.clearCheck();
+            if (qualityGuess == quality && sizeGuess == size) {
+                generateInterval();
+            }
+            qualityGuess = '0';
+            sizeGuess = 0;
+        }
     }
 
     private void generateInterval() {
@@ -104,7 +112,9 @@ public class MainActivity extends AppCompatActivity {
         Random rand = new Random();
         int a = rand.nextInt(11) - 5;
         int b = rand.nextInt(11) - 5;
-        if (Math.abs(a - b) <= 1) {
+        size = Math.abs(a - b) + 1;
+        quality = 'M';
+        if (size <= 2) {
             notes.addNote(0, Math.min(a, b));
             notes.addNote(1, Math.max(a, b));
         } else {
