@@ -44,4 +44,7 @@ public class NoteValue {
         int line = LINE_MAP[PITCH_MAP.get(pitch) % 12];
         return middleCPosition - line - 7 * (octave - 4);
     }
+    public int getAccidental() {
+        return accidental;
+    }
 }

@@ -24,11 +24,13 @@ public class NotesView extends View {
     public static final int staff_spacing = 10;
     public static List<NotePosition> note_positions = new ArrayList();
     public static Drawable note;
+    public static Drawable sharp;
     public static float density;
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
         note = ContextCompat.getDrawable(this.getContext(), R.drawable.note);
+        sharp = ContextCompat.getDrawable(this.getContext(), R.drawable.sharp);
         DisplayMetrics dm = new DisplayMetrics();
         WindowManager wm = (WindowManager)
             context.getSystemService(Context.WINDOW_SERVICE);
@@ -45,7 +47,8 @@ public class NotesView extends View {
         }
         int y = note.getHeight(6) * staff_spacing;
         y += (canvas_height - note_height) / 2;
-        note_positions.add(new NotePosition(x, y));
+        int accidental = note.getAccidental();
+        note_positions.add(new NotePosition(x, y, accidental));
     }
 
     public void clear() {
@@ -66,6 +69,10 @@ public class NotesView extends View {
                 (int) ((np.getX() + note_width) * density),
                 (int) ((np.getY() + note_height) * density));
             note.draw(canvas);
+            sharp.setBounds((int) (np.getX() * density),
+                (int) (np.getY() * density),
+                (int) ((np.getX() + note_width) * density),
+                (int) ((np.getY() + note_height) * density));
         }
     }
 }
