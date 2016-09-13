@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NoteValue {
+    private static final int[] LINE_MAP =
+        { 0, -1, 1, -1, 2, 3, -3, 4, -4, 5, -5, 6 };
     private static final Map<Character, Integer> PITCH_MAP = makePitchMap();
     private static Map<Character, Integer> makePitchMap() {
         Map<Character, Integer> res = new HashMap<Character, Integer>();
@@ -33,12 +35,13 @@ public class NoteValue {
     public int accidental;
     public NoteValue(String name) {
 		pitch = name.charAt(0);
-        octave = 1 + Integer.parseInt(
+        octave = Integer.parseInt(
             name.substring(name.length() - 1, name.length()));
         accidental = ACCIDENTAL_MAP.get(name.substring(1, name.length() - 1));
-		midi = octave * 12 + PITCH_MAP.get(pitch) + accidental;
+		midi = (octave + 1) * 12 + PITCH_MAP.get(pitch) + accidental;
     }
-    public int getHeight() {
-        return 3;
+    public int getHeight(int middleCPosition) {
+        int line = LINE_MAP[PITCH_MAP.get(pitch) % 12];
+        return middleCPosition - line - 7 * (octave - 4);
     }
 }

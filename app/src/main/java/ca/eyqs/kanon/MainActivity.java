@@ -12,6 +12,8 @@ import android.widget.RadioGroup;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
+    private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private RadioGroup qualGroup;
     private RadioGroup size1;
     private RadioGroup size2;
@@ -109,12 +111,25 @@ public class MainActivity extends AppCompatActivity {
     private void generateInterval() {
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
-        NoteValue a = new NoteValue("C5");
-        NoteValue b = new NoteValue("B4");
-        size = Math.abs(a.getHeight() - b.getHeight()) + 1;
+        Random rand = new Random();
+        int index = rand.nextInt(NOTES.length);
+        char pitch = NOTES[index];
+        index = rand.nextInt(ACCIDENTALS.length);
+        String accidental = ACCIDENTALS[index];
+        int octave = rand.nextInt(2) + 4;
+        NoteValue a = new NoteValue(Character.toString(pitch) +
+            accidental + Integer.toString(octave));
+        index = rand.nextInt(NOTES.length);
+        pitch = NOTES[index];
+        index = rand.nextInt(ACCIDENTALS.length);
+        accidental = ACCIDENTALS[index];
+        octave = rand.nextInt(2) + 4;
+        NoteValue b = new NoteValue(Character.toString(pitch) +
+            accidental + Integer.toString(octave));
+        size = Math.abs(a.getHeight(6) - b.getHeight(6)) + 1;
         quality = 'M';
         if (size <= 2) {
-            if (a.getHeight() < b.getHeight()) {
+            if (a.getHeight(6) < b.getHeight(6)) {
                 notes.addNote(a, false);
                 notes.addNote(b, true);
             } else {

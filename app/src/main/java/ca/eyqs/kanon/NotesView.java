@@ -43,7 +43,7 @@ public class NotesView extends View {
         } else {
             x = 0;
         }
-        int y = note.getHeight() * staff_spacing;
+        int y = note.getHeight(6) * staff_spacing;
         y += (canvas_height - note_height) / 2;
         note_positions.add(new NotePosition(x, y));
     }
