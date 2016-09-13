@@ -109,17 +109,21 @@ public class MainActivity extends AppCompatActivity {
     private void generateInterval() {
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
-        Random rand = new Random();
-        int a = rand.nextInt(11) - 5;
-        int b = rand.nextInt(11) - 5;
-        size = Math.abs(a - b) + 1;
+        NoteValue a = new NoteValue("C5");
+        NoteValue b = new NoteValue("B4");
+        size = Math.abs(a.getHeight() - b.getHeight()) + 1;
         quality = 'M';
         if (size <= 2) {
-            notes.addNote(0, Math.min(a, b));
-            notes.addNote(1, Math.max(a, b));
+            if (a.getHeight() < b.getHeight()) {
+                notes.addNote(a, false);
+                notes.addNote(b, true);
+            } else {
+                notes.addNote(a, true);
+                notes.addNote(b, false);
+            }
         } else {
-            notes.addNote(0, a);
-            notes.addNote(0, b);
+            notes.addNote(a, false);
+            notes.addNote(b, false);
         }
         notes.invalidate();
     }

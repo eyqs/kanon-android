@@ -36,9 +36,15 @@ public class NotesView extends View {
         density = dm.density;
     }
 
-    public void addNote(int position, int height) {
-        int x = position * second_offset;
-        int y = height * staff_spacing + (canvas_height - note_height) / 2;
+    public void addNote(NoteValue note, boolean second) {
+        int x;
+        if (second) {
+            x = second_offset;
+        } else {
+            x = 0;
+        }
+        int y = note.getHeight() * staff_spacing;
+        y += (canvas_height - note_height) / 2;
         note_positions.add(new NotePosition(x, y));
     }
 
