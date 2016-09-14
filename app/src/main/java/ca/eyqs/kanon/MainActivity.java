@@ -108,37 +108,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void generateInterval() {
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
+    private NoteValue generateNote() {
         Random rand = new Random();
         int index = rand.nextInt(NOTES.length);
         char pitch = NOTES[index];
         index = rand.nextInt(ACCIDENTALS.length);
         String accidental = ACCIDENTALS[index];
-        int octave = rand.nextInt(2) + 4;
-        NoteValue a = new NoteValue(Character.toString(pitch) +
-            accidental + Integer.toString(octave));
-        index = rand.nextInt(NOTES.length);
-        pitch = NOTES[index];
-        index = rand.nextInt(ACCIDENTALS.length);
-        accidental = ACCIDENTALS[index];
-        octave = rand.nextInt(2) + 4;
-        NoteValue b = new NoteValue(Character.toString(pitch) +
-            accidental + Integer.toString(octave));
+        int octave = 4;
+        return new NoteValue(Character.toString(pitch)
+            + accidental + Integer.toString(octave));
+    }
+
+    private void generateInterval() {
+        NotesView notes = (NotesView) findViewById(R.id.notes);
+        notes.clear();
+        NoteValue a = generateNote();
+        NoteValue b = generateNote();
         size = Math.abs(a.getHeight(6) - b.getHeight(6)) + 1;
         quality = 'M';
-        if (size <= 2) {
-            if (a.getHeight(6) < b.getHeight(6)) {
-                notes.addNote(a, false);
-                notes.addNote(b, true);
-            } else {
-                notes.addNote(a, true);
-                notes.addNote(b, false);
+        if (size <= 6) {
+            boolean aIsClose = false;
+            boolean bIsClose = false;
+            boolean aIsSecond = false;
+            boolean bIsSecond = false;
+            if (a.getAccidental() != 0 && b.getAccidental() != 0) {
+                if (size <= 2) {
+                    aIsClose = true;
+                    bIsClose = true;
+                } else if (a.getHeight(6) > b.getHeight(6)) {
+                    aIsClose = true;
+                } else {
+                    bIsClose = true;
+                }
             }
+            if (size <= 2) {
+                if (a.getHeight(6) < b.getHeight(6)) {
+                    if (a.getAccidental() != 0) {
+                        aIsClose = true;
+                    }
+                    aIsSecond = true;
+                } else {
+                    bIsSecond = true;
+                    if (b.getAccidental() != 0) {
+                        bIsClose = true;
+                    }
+                }
+            }
+            notes.addNote(a, aIsClose, aIsSecond);
+            notes.addNote(b, bIsClose, bIsSecond);
         } else {
-            notes.addNote(a, false);
-            notes.addNote(b, false);
+            notes.addNote(a, false, false);
+            notes.addNote(b, false, false);
         }
         notes.invalidate();
     }

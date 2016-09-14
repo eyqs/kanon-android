@@ -32,7 +32,7 @@ public class NoteValue {
     public int midi;
     public char pitch;
     public int octave;
-    public int accidental;
+    public int accidental = 0;
     public NoteValue(String name) {
 		pitch = name.charAt(0);
         octave = Integer.parseInt(

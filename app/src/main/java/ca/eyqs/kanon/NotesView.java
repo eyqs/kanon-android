@@ -16,15 +16,16 @@ import java.util.List;
 
 public class NotesView extends View {
 
-    public static final int canvas_width = 80;
+    public static final int canvas_width = 160;
     public static final int canvas_height = 202;
     public static final int note_width = 40;
     public static final int note_height = 22;
+    public static final int second_offset = 36;
+    public static final int acci_padding = 8;
     public static final int acci_width = 32;
     public static final int acci_height = 76;
-    public static final int second_offset = 36;
     public static final int staff_spacing = 10;
-    public static final int noteXOffset = acci_width + 8;
+    public static final int noteXOffset = acci_width + acci_padding;
     public static final int noteYOffset = (canvas_height - note_height) / 2;
     public static final int acciYOffset = (canvas_height - acci_height) / 2;
     public static List<NotePosition> note_positions = new ArrayList();
@@ -49,16 +50,18 @@ public class NotesView extends View {
         density = dm.density;
     }
 
-    public void addNote(NoteValue note, boolean second) {
-        int x;
-        if (second) {
-            x = second_offset;
-        } else {
-            x = 0;
+    public void addNote(NoteValue note, boolean isClose, boolean isSecond) {
+        int x = acci_width;
+        if (isSecond) {
+            x = second_offset + acci_width;
         }
         int y = note.getHeight(6) * staff_spacing;
-        int accidental = note.getAccidental();
-        note_positions.add(new NotePosition(x, y, accidental));
+        int a = note.getAccidental();
+        int c = 0;
+        if (isClose) {
+            c = acci_width;
+        }
+        note_positions.add(new NotePosition(x, y, a, c));
     }
 
     public void clear() {
@@ -71,17 +74,17 @@ public class NotesView extends View {
         // Draw notes from bottom to top, to avoid overlapping white borders
         Collections.sort(note_positions, new Comparator<NotePosition>() {
             public int compare(NotePosition a, NotePosition b) {
-                return a.getY() < b.getY() ? 1 : -1;
+                return a.height < b.height ? 1 : -1;
             }
         });
         for (NotePosition np : note_positions) {
-            note.setBounds((int) ((np.getX() + noteXOffset) * density),
-                (int) ((np.getY() + noteYOffset)  * density),
-                (int) ((np.getX() + note_width + noteXOffset) * density),
-                (int) ((np.getY() + note_height + noteYOffset) * density));
+            note.setBounds((int) ((np.position + noteXOffset) * density),
+                (int) ((np.height + noteYOffset)  * density),
+                (int) ((np.position + noteXOffset + note_width) * density),
+                (int) ((np.height + noteYOffset + note_height) * density));
             note.draw(canvas);
-            if (np.getA() != 0) {
-                switch (np.getA()) {
+            if (np.accidental != 0) {
+                switch (np.accidental) {
                     case -2:
                         accidental = dflat;
                         break;
@@ -95,10 +98,11 @@ public class NotesView extends View {
                         accidental = darp;
                         break;
                 }
-                accidental.setBounds((int) (np.getX() * density),
-                    (int) ((np.getY() + acciYOffset) * density),
-                    (int) ((np.getX() + acci_width) * density),
-                    (int) ((np.getY() + acci_height + acciYOffset) * density));
+                accidental.setBounds(
+                    (int) ((np.position - np.acciXOff) * density),
+                    (int) ((np.height + acciYOffset) * density),
+                    (int) ((np.position - np.acciXOff + acci_width) * density),
+                    (int) ((np.height + acciYOffset + acci_height) * density));
                 accidental.draw(canvas);
             }
         }

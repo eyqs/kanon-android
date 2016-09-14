@@ -1,19 +1,14 @@
 package ca.eyqs.kanon;
 
 public class NotePosition {
-    public int x;
-    public int y;
-    public int a;
-    public NotePosition(int position, int height, int accidental) {
-        x = position;
-        y = height;
-        a = accidental;
+    public final int position;
+    public final int height;
+    public final int accidental;
+    public final int acciXOff;
+    public NotePosition(int x, int y, int a, int o) {
+        position = x;
+        height = y;
+        accidental = a;
+        acciXOff = o;
     }
-    public int getX() {
-        return x;
-    }
-    public int getY() {
-        return y;
-    }
-    public int getA() { return a; }
 }
