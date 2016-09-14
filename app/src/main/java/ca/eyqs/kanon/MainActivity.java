@@ -14,15 +14,15 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
-    private RadioGroup qualGroup;
-    private RadioGroup size1;
-    private RadioGroup size2;
-    private RadioGroup size3;
-    private boolean isChecking = true;
-    private char qualityGuess = '0';
-    private int sizeGuess = 0;
-    private char quality = '0';
-    private int size = 0;
+    private static RadioGroup qualGroup;
+    private static RadioGroup size1;
+    private static RadioGroup size2;
+    private static RadioGroup size3;
+    private static boolean isChecking = true;
+    private static char qualityGuess = '0';
+    private static int sizeGuess = 0;
+    private static char quality = '0';
+    private static int size = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

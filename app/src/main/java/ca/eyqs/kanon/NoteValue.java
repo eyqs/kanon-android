@@ -29,10 +29,10 @@ public class NoteValue {
 		res.put("x", 2);
         return Collections.unmodifiableMap(res);
     }
-    public int midi;
-    public char pitch;
-    public int octave;
-    public int accidental = 0;
+    private final int midi;
+    private final char pitch;
+    private final int octave;
+    private final int accidental;
     public NoteValue(String name) {
 		pitch = name.charAt(0);
         octave = Integer.parseInt(

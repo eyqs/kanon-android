@@ -15,26 +15,25 @@ import java.util.Comparator;
 import java.util.List;
 
 public class NotesView extends View {
-
-    public static final int canvas_width = 160;
-    public static final int canvas_height = 202;
-    public static final int note_width = 40;
-    public static final int note_height = 22;
-    public static final int second_offset = 36;
-    public static final int acci_padding = 8;
-    public static final int acci_width = 32;
-    public static final int acci_height = 76;
-    public static final int staff_spacing = 10;
-    public static final int noteXOffset = acci_width + acci_padding;
-    public static final int noteYOffset = (canvas_height - note_height) / 2;
-    public static final int acciYOffset = (canvas_height - acci_height) / 2;
-    public static List<NotePosition> note_positions = new ArrayList();
-    public static Drawable note;
-    public static Drawable sharp;
-    public static Drawable flat;
-    public static Drawable darp;
-    public static Drawable dflat;
-    public static float density;
+    private static final int canvas_width = 160;
+    private static final int canvas_height = 202;
+    private static final int note_width = 40;
+    private static final int note_height = 22;
+    private static final int second_offset = 36;
+    private static final int acci_padding = 8;
+    private static final int acci_width = 32;
+    private static final int acci_height = 76;
+    private static final int staff_spacing = 10;
+    private static final int noteXOffset = acci_width + acci_padding;
+    private static final int noteYOffset = (canvas_height - note_height) / 2;
+    private static final int acciYOffset = (canvas_height - acci_height) / 2;
+    private static List<NotePosition> note_positions = new ArrayList();
+    private static Drawable note;
+    private static Drawable sharp;
+    private static Drawable flat;
+    private static Drawable darp;
+    private static Drawable dflat;
+    private static float density;
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
