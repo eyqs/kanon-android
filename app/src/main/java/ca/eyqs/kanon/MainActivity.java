@@ -1,10 +1,13 @@
 package ca.eyqs.kanon;
 
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -14,6 +17,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
+    private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static RadioGroup qualGroup;
     private static RadioGroup size1;
     private static RadioGroup size2;
@@ -29,8 +33,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
+            0, RadioGroup.LayoutParams.MATCH_PARENT, 1);
         /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
         qualGroup = (RadioGroup) findViewById(R.id.interval_quality);
+        for (int i = 0; i < 5; ++i) {
+            RadioButton button = new RadioButton(this);
+            button.setAllCaps(false);
+            button.setBackgroundResource(R.drawable.push_button);
+            button.setButtonDrawable(null);
+            button.setGravity(Gravity.CENTER);
+            button.setLayoutParams(params);
+            button.setOnClickListener(clickListener);
+            button.setTag(QUALITIES[i]);
+            button.setText(QUALITIES[i]);
+            qualGroup.addView(button);
+        }
         qualGroup.setOnCheckedChangeListener(
             new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -45,6 +63,23 @@ public class MainActivity extends AppCompatActivity {
         size1 = (RadioGroup) findViewById(R.id.interval_size_one);
         size2 = (RadioGroup) findViewById(R.id.interval_size_two);
         size3 = (RadioGroup) findViewById(R.id.interval_size_three);
+        for (int i = 1; i <= 15; ++i) {
+            RadioButton button = new RadioButton(this);
+            button.setBackgroundResource(R.drawable.push_button);
+            button.setButtonDrawable(null);
+            button.setGravity(Gravity.CENTER);
+            button.setLayoutParams(params);
+            button.setOnClickListener(clickListener);
+            button.setTag(String.valueOf(i));
+            button.setText(String.valueOf(i));
+            if (i <= 5) {
+                size1.addView(button);
+            } else if (i <= 10) {
+                size2.addView(button);
+            } else {
+                size3.addView(button);
+            }
+        }
         size1.setOnCheckedChangeListener(
             new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -93,20 +128,22 @@ public class MainActivity extends AppCompatActivity {
         generateInterval();
     }
 
-    /** Called when the user pushes any button */
-    public void pushButton(View view) {
-        if (qualityGuess != '0' && sizeGuess != 0) {
-            qualGroup.clearCheck();
-            size1.clearCheck();
-            size2.clearCheck();
-            size3.clearCheck();
-            if (qualityGuess == quality && sizeGuess == size) {
-                generateInterval();
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (qualityGuess != '0' && sizeGuess != 0) {
+                qualGroup.clearCheck();
+                size1.clearCheck();
+                size2.clearCheck();
+                size3.clearCheck();
+                if (qualityGuess == quality && sizeGuess == size) {
+                    generateInterval();
+                }
+                qualityGuess = '0';
+                sizeGuess = 0;
             }
-            qualityGuess = '0';
-            sizeGuess = 0;
         }
-    }
+    };
 
     private NoteValue generateNote() {
         Random rand = new Random();
