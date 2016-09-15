@@ -15,38 +15,50 @@ import java.util.Comparator;
 import java.util.List;
 
 public class NotesView extends View {
-    private static final int canvas_width = 160;
-    private static final int canvas_height = 202;
-    private static final int note_width = 40;
-    private static final int note_height = 22;
-    private static final int second_offset = 36;
-    private static final int acci_padding = 8;
-    private static final int acci_width = 32;
-    private static final int acci_height = 76;
-    private static final int staff_spacing = 10;
-    private static final int noteXOffset = acci_width + acci_padding;
-    private static final int noteYOffset = (canvas_height - note_height) / 2;
-    private static final int acciYOffset = (canvas_height - acci_height) / 2;
+    private final int canvas_height;
+    private final int note_width;
+    private final int note_height;
+    private final int second_offset;
+    private final int acci_padding;
+    private final int acci_width;
+    private final int acci_height;
+    private final int staff_spacing;
+    private final int noteXOffset;
+    private final int noteYOffset;
+    private final int acciYOffset;
     private static List<NotePosition> note_positions = new ArrayList();
     private static Drawable note;
     private static Drawable sharp;
     private static Drawable flat;
     private static Drawable darp;
     private static Drawable dflat;
-    private static float density;
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        canvas_height = (int) context.getResources().getDimension(
+            R.dimen.notes_height);
+        note_width = (int) context.getResources().getDimension(
+            R.dimen.note_width);
+        note_height = (int) context.getResources().getDimension(
+            R.dimen.note_height);
+        second_offset = (int) context.getResources().getDimension(
+            R.dimen.second_offset);
+        acci_padding = (int) context.getResources().getDimension(
+            R.dimen.acci_padding);
+        acci_width = (int) context.getResources().getDimension(
+            R.dimen.acci_width);
+        acci_height = (int) context.getResources().getDimension(
+            R.dimen.acci_height);
+        staff_spacing = (int) context.getResources().getDimension(
+            R.dimen.staff_spacing);
+        noteXOffset = acci_width + acci_padding;
+        noteYOffset = (canvas_height - note_height) / 2;
+        acciYOffset = (canvas_height - acci_height) / 2;
         note = ContextCompat.getDrawable(this.getContext(), R.drawable.note);
         sharp = ContextCompat.getDrawable(this.getContext(), R.drawable.sharp);
         flat = ContextCompat.getDrawable(this.getContext(), R.drawable.flat);
         darp = ContextCompat.getDrawable(this.getContext(), R.drawable.dsharp);
         dflat = ContextCompat.getDrawable(this.getContext(), R.drawable.dflat);
-        DisplayMetrics dm = new DisplayMetrics();
-        WindowManager wm = (WindowManager)
-            context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(dm);
-        density = dm.density;
     }
 
     public void addNote(NoteValue note, boolean isClose, boolean isSecond) {
@@ -77,10 +89,9 @@ public class NotesView extends View {
             }
         });
         for (NotePosition np : note_positions) {
-            note.setBounds((int) ((np.position + noteXOffset) * density),
-                (int) ((np.height + noteYOffset)  * density),
-                (int) ((np.position + noteXOffset + note_width) * density),
-                (int) ((np.height + noteYOffset + note_height) * density));
+            note.setBounds(np.position + noteXOffset, np.height + noteYOffset,
+                np.position + noteXOffset + note_width,
+                np.height + noteYOffset + note_height);
             note.draw(canvas);
             if (np.accidental != 0) {
                 switch (np.accidental) {
@@ -97,11 +108,10 @@ public class NotesView extends View {
                         accidental = darp;
                         break;
                 }
-                accidental.setBounds(
-                    (int) ((np.position - np.acciXOff) * density),
-                    (int) ((np.height + acciYOffset) * density),
-                    (int) ((np.position - np.acciXOff + acci_width) * density),
-                    (int) ((np.height + acciYOffset + acci_height) * density));
+                accidental.setBounds(np.position - np.acciXOff,
+                    np.height + acciYOffset,
+                    np.position - np.acciXOff + acci_width,
+                    np.height + acciYOffset + acci_height);
                 accidental.draw(canvas);
             }
         }
