@@ -1,5 +1,6 @@
 package ca.eyqs.kanon;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -126,6 +127,11 @@ public class MainActivity extends AppCompatActivity {
             }
         );
         generateInterval();
+    }
+
+    public void changeSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
