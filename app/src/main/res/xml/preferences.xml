@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="checkbox_preference"
-        android:title="Checkbox"
-        android:summary="Check out this box!"
-        android:defaultValue="false" />
-</PreferenceScreen>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+<header
+    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
+    android:title="Clef Settings"
+    android:summary="Choose a clef">
+    <extra android:name="settings" android:value="clef" />
+</header>
+<header
+    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
+    android:title="Range Settings"
+    android:summary="Choose clef ranges">
+    <extra android:name="settings" android:value="range" />
+</header>
+</preference-headers>

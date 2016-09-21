@@ -1,22 +1,37 @@
 package ca.eyqs.kanon;
 
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.AppCompatActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+import java.util.List;
+
+public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(
-            android.R.id.content, new SettingsFragment()).commit();
+    }
+
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.preferences, target);
+    }
+
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return SettingsFragment.class.getName().equals(fragmentName);
     }
 
     public static class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
+            String settings = getArguments().getString("settings");
+            if ("clef".equals(settings)) {
+                addPreferencesFromResource(R.xml.settings_clef);
+            } else if ("range".equals(settings)) {
+                addPreferencesFromResource(R.xml.settings_range);
+            }
         }
     }
 }
