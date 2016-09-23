@@ -1,24 +1,36 @@
 package ca.eyqs.kanon;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
+    private static final Map<String, Integer> CLEFRANGES = makeClefMap();
+    private static Map<String, Integer> makeClefMap() {
+        Map<String, Integer> res = new HashMap<String, Integer>();
+        res.put("Treble", 6);
+        res.put("Alto", 0);
+        res.put("Tenor", -2);
+        res.put("Bass", -6);
+        return Collections.unmodifiableMap(res);
+    }
     private static RadioGroup qualGroup;
     private static RadioGroup size1;
     private static RadioGroup size2;
@@ -163,13 +175,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
+        SharedPreferences sharedPref = PreferenceManager
+            .getDefaultSharedPreferences(this);
+        String clef = sharedPref.getString("clef_list", "Treble");
+        int middle = CLEFRANGES.get(clef);
+
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
         NoteValue a = generateNote();
         NoteValue b = generateNote();
-        size = Math.abs(a.getHeight(6) - b.getHeight(6)) + 1;
+        size = Math.abs(a.getHeight(middle) - b.getHeight(middle)) + 1;
         quality = 'M';
-        if (size <= 6) {
+        if (size <= middle) {
             boolean aIsClose = false;
             boolean bIsClose = false;
             boolean aIsSecond = false;
@@ -178,14 +195,14 @@ public class MainActivity extends AppCompatActivity {
                 if (size <= 2) {
                     aIsClose = true;
                     bIsClose = true;
-                } else if (a.getHeight(6) > b.getHeight(6)) {
+                } else if (a.getHeight(middle) > b.getHeight(middle)) {
                     aIsClose = true;
                 } else {
                     bIsClose = true;
                 }
             }
             if (size <= 2) {
-                if (a.getHeight(6) < b.getHeight(6)) {
+                if (a.getHeight(middle) < b.getHeight(middle)) {
                     if (a.getAccidental() != 0) {
                         aIsClose = true;
                     }
@@ -197,11 +214,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            notes.addNote(a, aIsClose, aIsSecond);
-            notes.addNote(b, bIsClose, bIsSecond);
+            notes.addNote(a, aIsClose, aIsSecond, middle);
+            notes.addNote(b, bIsClose, bIsSecond, middle);
         } else {
-            notes.addNote(a, false, false);
-            notes.addNote(b, false, false);
+            notes.addNote(a, false, false, middle);
+            notes.addNote(b, false, false, middle);
         }
         notes.invalidate();
     }

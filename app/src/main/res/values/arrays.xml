@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="clef_array">
+        <item>@string/clef_treble</item>
+        <item>@string/clef_alto</item>
+        <item>@string/clef_tenor</item>
+        <item>@string/clef_bass</item>
+    </string-array>
+</resources>
