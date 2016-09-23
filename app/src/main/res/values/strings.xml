@@ -5,6 +5,5 @@
     <string name="settings_clef">Select a Clef</string>
     <string name="clef_treble">Treble</string>
     <string name="clef_alto">Alto</string>
-    <string name="clef_tenor">Tenor</string>
     <string name="clef_bass">Bass</string>
 </resources>

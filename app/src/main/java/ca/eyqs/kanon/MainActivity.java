@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int SETTINGS_REQUEST = 1;
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
@@ -40,11 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private static int sizeGuess = 0;
     private static char quality = '0';
     private static int size = 0;
+    private static String clef = "Treble";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setClef();
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
             0, RadioGroup.LayoutParams.MATCH_PARENT, 1);
@@ -141,9 +144,38 @@ public class MainActivity extends AppCompatActivity {
         generateInterval();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SETTINGS_REQUEST) {
+            setClef();
+        }
+    }
+
     public void changeSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SETTINGS_REQUEST);
+    }
+
+    private void setClef() {
+        SharedPreferences sp = PreferenceManager
+            .getDefaultSharedPreferences(this);
+        if (!clef.equals(sp.getString("clef_list", "Treble"))) {
+            clef = sp.getString("clef_list", "Treble");
+            generateInterval();
+        }
+        View v = findViewById(R.id.clef_image);
+        switch (clef) {
+            case "Treble":
+                v.setBackgroundResource(R.drawable.treble);
+                break;
+            case "Alto":
+                v.setBackgroundResource(R.drawable.alto);
+                break;
+            case "Bass":
+                v.setBackgroundResource(R.drawable.bass);
+                break;
+        }
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -175,11 +207,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
-        SharedPreferences sharedPref = PreferenceManager
-            .getDefaultSharedPreferences(this);
-        String clef = sharedPref.getString("clef_list", "Treble");
         int middle = CLEFRANGES.get(clef);
-
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
         NoteValue a = generateNote();

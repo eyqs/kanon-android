@@ -21,8 +21,7 @@
                 android:layout_height="match_parent" />
             <ImageView android:id="@+id/clef_image"
                 android:layout_width="@dimen/clef_width"
-                android:layout_height="@dimen/clef_height"
-                android:src="@drawable/treble" />
+                android:layout_height="@dimen/clef_height" />
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
