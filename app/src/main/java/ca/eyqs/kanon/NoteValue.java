@@ -47,4 +47,5 @@ public class NoteValue {
     public int getAccidental() {
         return accidental;
     }
+    public int getMidi() { return midi; }
 }

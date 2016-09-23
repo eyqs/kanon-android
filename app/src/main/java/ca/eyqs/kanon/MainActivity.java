@@ -32,6 +32,41 @@ public class MainActivity extends AppCompatActivity {
         res.put("Bass", -6);
         return Collections.unmodifiableMap(res);
     }
+    private static final Map<Integer, Map<Integer, Character>> INTERVALS =
+        makeIntervalMap();
+    private static Map<Integer, Map<Integer, Character>> makeIntervalMap() {
+        Map<Integer, Map<Integer, Character>> res =
+            new HashMap<Integer, Map<Integer, Character>>();
+        for (int i = 1; i < 8; i++) {
+            res.put(i, new HashMap<Integer, Character>());
+        }
+        res.get(1).put(11, 'd');
+        res.get(1).put(0, 'P');
+        res.get(1).put(1, 'A');
+        res.get(2).put(0, 'd');
+        res.get(2).put(1, 'm');
+        res.get(2).put(2, 'M');
+        res.get(2).put(3, 'A');
+        res.get(3).put(2, 'd');
+        res.get(3).put(3, 'm');
+        res.get(3).put(4, 'M');
+        res.get(3).put(5, 'A');
+        res.get(4).put(4, 'd');
+        res.get(4).put(5, 'P');
+        res.get(4).put(6, 'A');
+        res.get(5).put(6, 'd');
+        res.get(5).put(7, 'P');
+        res.get(5).put(8, 'A');
+        res.get(6).put(7, 'd');
+        res.get(6).put(8, 'm');
+        res.get(6).put(9, 'M');
+        res.get(6).put(10, 'A');
+        res.get(7).put(9, 'd');
+        res.get(7).put(10, 'm');
+        res.get(7).put(11, 'M');
+        res.get(7).put(0, 'A');
+        return Collections.unmodifiableMap(res);
+    }
     private static RadioGroup qualGroup;
     private static RadioGroup size1;
     private static RadioGroup size2;
@@ -201,7 +236,35 @@ public class MainActivity extends AppCompatActivity {
         char pitch = NOTES[index];
         index = rand.nextInt(ACCIDENTALS.length);
         String accidental = ACCIDENTALS[index];
-        int octave = 4;
+        int octave = 2 + rand.nextInt(3);
+        switch (clef) {
+            case "Treble":
+                if (octave < 4) {
+                    return generateNote();
+                } else if (octave == 4 && pitch == 'C') {
+                    return generateNote();
+                } else if (octave == 5 && (pitch == 'A' || pitch == 'B')) {
+                    return generateNote();
+                }
+                break;
+            case "Alto":
+                if (octave > 4 || octave < 3) {
+                    return generateNote();
+                } else if (octave == 4 && pitch == 'B') {
+                    return generateNote();
+                } else if (octave == 3 && (pitch == 'C' || pitch == 'D')) {
+                    return generateNote();
+                }
+                break;
+            case "Bass":
+                if (octave > 3) {
+                    return generateNote();
+                } else if (octave == 2 &&
+                           (pitch == 'C' || pitch == 'D' || pitch == 'E')) {
+                    return generateNote();
+                }
+                break;
+        }
         return new NoteValue(Character.toString(pitch)
             + accidental + Integer.toString(octave));
     }
@@ -210,11 +273,25 @@ public class MainActivity extends AppCompatActivity {
         int middle = CLEFRANGES.get(clef);
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
-        NoteValue a = generateNote();
-        NoteValue b = generateNote();
-        size = Math.abs(a.getHeight(middle) - b.getHeight(middle)) + 1;
-        quality = 'M';
-        if (size <= middle) {
+
+        NoteValue a;
+        NoteValue b;
+        int semitones;
+        do {
+            a = generateNote();
+            b = generateNote();
+            if (a.getHeight(middle) < b.getHeight(middle)) {
+                size = b.getHeight(middle) - a.getHeight(middle);
+                semitones = a.getMidi() - b.getMidi();
+            } else {
+                size = a.getHeight(middle) - b.getHeight(middle);
+                semitones = b.getMidi() - a.getMidi();
+            }
+        } while (INTERVALS.get(size % 7 + 1).get(semitones % 12) == null);
+        quality = INTERVALS.get(size % 7 + 1).get(semitones % 12);
+        size += 1;
+
+        if (size <= 6) {
             boolean aIsClose = false;
             boolean bIsClose = false;
             boolean aIsSecond = false;
