@@ -2,6 +2,8 @@ package ca.eyqs.kanon;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.drawable.StateListDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -86,13 +88,18 @@ public class MainActivity extends AppCompatActivity {
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
             0, RadioGroup.LayoutParams.MATCH_PARENT, 1);
+        if (getResources().getConfiguration().orientation ==
+            Configuration.ORIENTATION_LANDSCAPE) {
+            params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.MATCH_PARENT, 0, 1);
+        }
         /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
         qualGroup = (RadioGroup) findViewById(R.id.interval_quality);
         for (int i = 0; i < 5; ++i) {
             RadioButton button = new RadioButton(this);
             button.setAllCaps(false);
             button.setBackgroundResource(R.drawable.push_button);
-            button.setButtonDrawable(null);
+            button.setButtonDrawable(new StateListDrawable());
             button.setGravity(Gravity.CENTER);
             button.setLayoutParams(params);
             button.setOnClickListener(clickListener);
@@ -117,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 1; i <= 15; ++i) {
             RadioButton button = new RadioButton(this);
             button.setBackgroundResource(R.drawable.push_button);
-            button.setButtonDrawable(null);
+            button.setButtonDrawable(new StateListDrawable());
             button.setGravity(Gravity.CENTER);
             button.setLayoutParams(params);
             button.setOnClickListener(clickListener);
@@ -236,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         char pitch = NOTES[index];
         index = rand.nextInt(ACCIDENTALS.length);
         String accidental = ACCIDENTALS[index];
-        int octave = 2 + rand.nextInt(3);
+        int octave = 2 + rand.nextInt(4);
         switch (clef) {
             case "Treble":
                 if (octave < 4) {
