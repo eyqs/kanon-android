@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Kanon</string>
     <string name="settings">Settings</string>
+    <string name="clef">Clef Settings</string>
+    <string name="settings_clef">Select a clef</string>
+    <string name="long_settings_clef">Choose a clef and adjust clef ranges</string>
+    <string name="clef_treble">Treble</string>
+    <string name="clef_alto">Alto</string>
+    <string name="clef_bass">Bass</string>
+    <string name="settings_range">Set clef ranges, in the format C#4-Bb6</string>
+    <string name="pitch">Pitch Settings</string>
+    <string name="settings_pitch">Select available pitches</string>
+    <string name="interval">Interval Settings</string>
+    <string name="interval_simple">Simple Intervals</string>
+    <string name="interval_compound">Compound Intervals</string>
+    <string name="settings_interval">Select possible intervals</string>
 </resources>

@@ -29,8 +29,10 @@ public class SettingsActivity extends PreferenceActivity {
             String settings = getArguments().getString("settings");
             if ("clef".equals(settings)) {
                 addPreferencesFromResource(R.xml.settings_clef);
-            } else if ("range".equals(settings)) {
-                addPreferencesFromResource(R.xml.settings_range);
+            } else if ("pitch".equals(settings)) {
+                addPreferencesFromResource(R.xml.settings_pitch);
+            } else if ("interval".equals(settings)) {
+                addPreferencesFromResource(R.xml.settings_interval);
             }
         }
     }
