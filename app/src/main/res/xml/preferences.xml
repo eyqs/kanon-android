@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+<header
+    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
+    android:title="@string/clef"
+    android:summary="@string/long_settings_clef">
+    <extra android:name="settings" android:value="clef" />
+</header>
+<header
+    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
+    android:title="@string/pitch"
+    android:summary="@string/settings_pitch">
+    <extra android:name="settings" android:value="pitch" />
+</header>
+<header
+    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
+    android:title="@string/interval"
+    android:summary="@string/settings_interval">
+    <extra android:name="settings" android:value="interval" />
+</header>
+</preference-headers>

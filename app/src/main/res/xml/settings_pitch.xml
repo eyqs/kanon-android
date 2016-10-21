@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <MultiSelectListPreference
+        android:key="pitch_list"
+        android:title="@string/pitch"
+        android:entries="@array/pitch_array"
+        android:entryValues="@array/pitch_array"
+        android:defaultValue="@array/pitch_default" />
+</PreferenceScreen>

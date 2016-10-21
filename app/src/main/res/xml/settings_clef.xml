@@ -8,4 +8,16 @@
         android:defaultValue="@string/clef_treble"
         android:entries="@array/clef_array"
         android:entryValues="@array/clef_array" />
+    <PreferenceCategory
+        android:title="@string/settings_range">
+        <EditTextPreference
+            android:key="range_treble"
+            android:title="@string/clef_treble" />
+        <EditTextPreference
+            android:key="range_alto"
+            android:title="@string/clef_alto" />
+        <EditTextPreference
+            android:key="range_bass"
+            android:title="@string/clef_bass" />
+    </PreferenceCategory>
 </PreferenceScreen>
