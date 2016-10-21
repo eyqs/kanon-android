@@ -5,9 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,12 +59,13 @@ public class NotesView extends View {
         dflat = ContextCompat.getDrawable(this.getContext(), R.drawable.dflat);
     }
 
-    public void addNote(NoteValue note, boolean isClose, boolean isSecond) {
+    public void addNote(NoteValue note, boolean isClose, boolean isSecond,
+                        int staff_middle) {
         int x = acci_width;
         if (isSecond) {
             x = second_offset + acci_width;
         }
-        int y = note.getHeight(6) * staff_spacing;
+        int y = note.getHeight(staff_middle) * staff_spacing;
         int a = note.getAccidental();
         int c = 0;
         if (isClose) {

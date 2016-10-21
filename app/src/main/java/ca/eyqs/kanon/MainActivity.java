@@ -1,24 +1,74 @@
 package ca.eyqs.kanon;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.drawable.StateListDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int SETTINGS_REQUEST = 1;
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
+    private static final Map<String, Integer> CLEFRANGES = makeClefMap();
+    private static Map<String, Integer> makeClefMap() {
+        Map<String, Integer> res = new HashMap<String, Integer>();
+        res.put("Treble", 6);
+        res.put("Alto", 0);
+        res.put("Tenor", -2);
+        res.put("Bass", -6);
+        return Collections.unmodifiableMap(res);
+    }
+    private static final Map<Integer, Map<Integer, Character>> INTERVALS =
+        makeIntervalMap();
+    private static Map<Integer, Map<Integer, Character>> makeIntervalMap() {
+        Map<Integer, Map<Integer, Character>> res =
+            new HashMap<Integer, Map<Integer, Character>>();
+        for (int i = 1; i < 8; i++) {
+            res.put(i, new HashMap<Integer, Character>());
+        }
+        res.get(1).put(11, 'd');
+        res.get(1).put(0, 'P');
+        res.get(1).put(1, 'A');
+        res.get(2).put(0, 'd');
+        res.get(2).put(1, 'm');
+        res.get(2).put(2, 'M');
+        res.get(2).put(3, 'A');
+        res.get(3).put(2, 'd');
+        res.get(3).put(3, 'm');
+        res.get(3).put(4, 'M');
+        res.get(3).put(5, 'A');
+        res.get(4).put(4, 'd');
+        res.get(4).put(5, 'P');
+        res.get(4).put(6, 'A');
+        res.get(5).put(6, 'd');
+        res.get(5).put(7, 'P');
+        res.get(5).put(8, 'A');
+        res.get(6).put(7, 'd');
+        res.get(6).put(8, 'm');
+        res.get(6).put(9, 'M');
+        res.get(6).put(10, 'A');
+        res.get(7).put(9, 'd');
+        res.get(7).put(10, 'm');
+        res.get(7).put(11, 'M');
+        res.get(7).put(0, 'A');
+        return Collections.unmodifiableMap(res);
+    }
     private static RadioGroup qualGroup;
     private static RadioGroup size1;
     private static RadioGroup size2;
@@ -28,21 +78,28 @@ public class MainActivity extends AppCompatActivity {
     private static int sizeGuess = 0;
     private static char quality = '0';
     private static int size = 0;
+    private static String clef = "Treble";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setClef();
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
             0, RadioGroup.LayoutParams.MATCH_PARENT, 1);
+        if (getResources().getConfiguration().orientation ==
+            Configuration.ORIENTATION_LANDSCAPE) {
+            params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.MATCH_PARENT, 0, 1);
+        }
         /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
         qualGroup = (RadioGroup) findViewById(R.id.interval_quality);
         for (int i = 0; i < 5; ++i) {
             RadioButton button = new RadioButton(this);
             button.setAllCaps(false);
             button.setBackgroundResource(R.drawable.push_button);
-            button.setButtonDrawable(null);
+            button.setButtonDrawable(new StateListDrawable());
             button.setGravity(Gravity.CENTER);
             button.setLayoutParams(params);
             button.setOnClickListener(clickListener);
@@ -67,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 1; i <= 15; ++i) {
             RadioButton button = new RadioButton(this);
             button.setBackgroundResource(R.drawable.push_button);
-            button.setButtonDrawable(null);
+            button.setButtonDrawable(new StateListDrawable());
             button.setGravity(Gravity.CENTER);
             button.setLayoutParams(params);
             button.setOnClickListener(clickListener);
@@ -129,9 +186,38 @@ public class MainActivity extends AppCompatActivity {
         generateInterval();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SETTINGS_REQUEST) {
+            setClef();
+        }
+    }
+
     public void changeSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SETTINGS_REQUEST);
+    }
+
+    private void setClef() {
+        SharedPreferences sp = PreferenceManager
+            .getDefaultSharedPreferences(this);
+        if (!clef.equals(sp.getString("clef_list", "Treble"))) {
+            clef = sp.getString("clef_list", "Treble");
+            generateInterval();
+        }
+        View v = findViewById(R.id.clef_image);
+        switch (clef) {
+            case "Treble":
+                v.setBackgroundResource(R.drawable.treble);
+                break;
+            case "Alto":
+                v.setBackgroundResource(R.drawable.alto);
+                break;
+            case "Bass":
+                v.setBackgroundResource(R.drawable.bass);
+                break;
+        }
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -157,18 +243,61 @@ public class MainActivity extends AppCompatActivity {
         char pitch = NOTES[index];
         index = rand.nextInt(ACCIDENTALS.length);
         String accidental = ACCIDENTALS[index];
-        int octave = 4;
+        int octave = 2 + rand.nextInt(4);
+        switch (clef) {
+            case "Treble":
+                if (octave < 4) {
+                    return generateNote();
+                } else if (octave == 4 && pitch == 'C') {
+                    return generateNote();
+                } else if (octave == 5 && (pitch == 'A' || pitch == 'B')) {
+                    return generateNote();
+                }
+                break;
+            case "Alto":
+                if (octave > 4 || octave < 3) {
+                    return generateNote();
+                } else if (octave == 4 && pitch == 'B') {
+                    return generateNote();
+                } else if (octave == 3 && (pitch == 'C' || pitch == 'D')) {
+                    return generateNote();
+                }
+                break;
+            case "Bass":
+                if (octave > 3) {
+                    return generateNote();
+                } else if (octave == 2 &&
+                           (pitch == 'C' || pitch == 'D' || pitch == 'E')) {
+                    return generateNote();
+                }
+                break;
+        }
         return new NoteValue(Character.toString(pitch)
             + accidental + Integer.toString(octave));
     }
 
     private void generateInterval() {
+        int middle = CLEFRANGES.get(clef);
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
-        NoteValue a = generateNote();
-        NoteValue b = generateNote();
-        size = Math.abs(a.getHeight(6) - b.getHeight(6)) + 1;
-        quality = 'M';
+
+        NoteValue a;
+        NoteValue b;
+        int semitones;
+        do {
+            a = generateNote();
+            b = generateNote();
+            if (a.getHeight(middle) < b.getHeight(middle)) {
+                size = b.getHeight(middle) - a.getHeight(middle);
+                semitones = a.getMidi() - b.getMidi();
+            } else {
+                size = a.getHeight(middle) - b.getHeight(middle);
+                semitones = b.getMidi() - a.getMidi();
+            }
+        } while (INTERVALS.get(size % 7 + 1).get(semitones % 12) == null);
+        quality = INTERVALS.get(size % 7 + 1).get(semitones % 12);
+        size += 1;
+
         if (size <= 6) {
             boolean aIsClose = false;
             boolean bIsClose = false;
@@ -178,14 +307,14 @@ public class MainActivity extends AppCompatActivity {
                 if (size <= 2) {
                     aIsClose = true;
                     bIsClose = true;
-                } else if (a.getHeight(6) > b.getHeight(6)) {
+                } else if (a.getHeight(middle) > b.getHeight(middle)) {
                     aIsClose = true;
                 } else {
                     bIsClose = true;
                 }
             }
             if (size <= 2) {
-                if (a.getHeight(6) < b.getHeight(6)) {
+                if (a.getHeight(middle) < b.getHeight(middle)) {
                     if (a.getAccidental() != 0) {
                         aIsClose = true;
                     }
@@ -197,11 +326,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            notes.addNote(a, aIsClose, aIsSecond);
-            notes.addNote(b, bIsClose, bIsSecond);
+            notes.addNote(a, aIsClose, aIsSecond, middle);
+            notes.addNote(b, bIsClose, bIsSecond, middle);
         } else {
-            notes.addNote(a, false, false);
-            notes.addNote(b, false, false);
+            notes.addNote(a, false, false, middle);
+            notes.addNote(b, false, false, middle);
         }
         notes.invalidate();
     }
