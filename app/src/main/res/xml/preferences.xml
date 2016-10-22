@@ -8,14 +8,8 @@
 </header>
 <header
     android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
-    android:title="@string/pitch"
-    android:summary="@string/settings_pitch">
-    <extra android:name="settings" android:value="pitch" />
-</header>
-<header
-    android:fragment="ca.eyqs.kanon.SettingsActivity$SettingsFragment"
-    android:title="@string/interval"
-    android:summary="@string/settings_interval">
-    <extra android:name="settings" android:value="interval" />
+    android:title="@string/possible"
+    android:summary="@string/settings_possible">
+    <extra android:name="settings" android:value="possible" />
 </header>
 </preference-headers>
