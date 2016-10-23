@@ -26,6 +26,7 @@
     <string name="note_dflat">bb</string>
     <string name="interval">Interval Settings</string>
     <string name="settings_interval">Select possible intervals</string>
+    <string name="interval_0">0</string>
     <string name="interval_1">1</string>
     <string name="interval_2">2</string>
     <string name="interval_3">3</string>
