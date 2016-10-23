@@ -7,14 +7,10 @@
         <item>@string/clef_alto</item>
         <item>@string/clef_bass</item>
     </string-array>
-    <string-array name="pitch_array" />
-    <string-array name="interval_array" />
     <string-array
         name="clef_values">
         <item>Treble</item>
         <item>Alto</item>
         <item>Bass</item>
     </string-array>
-    <string-array name="pitch_values" />
-    <string-array name="interval_values" />
 </resources>

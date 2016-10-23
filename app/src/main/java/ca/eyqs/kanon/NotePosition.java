@@ -1,6 +1,6 @@
 package ca.eyqs.kanon;
 
-public class NotePosition {
+class NotePosition {
     public final int position;
     public final int height;
     public final int accidental;

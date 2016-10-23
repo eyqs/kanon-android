@@ -24,12 +24,18 @@ public class NotesView extends View {
     private final int noteXOffset;
     private final int noteYOffset;
     private final int acciYOffset;
-    private static List<NotePosition> note_positions = new ArrayList();
+    private static final List<NotePosition> note_positions = new ArrayList<>();
     private static Drawable note;
     private static Drawable sharp;
     private static Drawable flat;
-    private static Drawable darp;
+    private static Drawable dsharp;
     private static Drawable dflat;
+    private static final Comparator<NotePosition> comp =
+        new Comparator<NotePosition>() {
+            public int compare(NotePosition a, NotePosition b) {
+                return a.height < b.height ? 1 : -1;
+            }
+        };
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -52,11 +58,16 @@ public class NotesView extends View {
         noteXOffset = acci_width + acci_padding;
         noteYOffset = (canvas_height - note_height) / 2;
         acciYOffset = (canvas_height - acci_height) / 2;
-        note = ContextCompat.getDrawable(this.getContext(), R.drawable.note);
-        sharp = ContextCompat.getDrawable(this.getContext(), R.drawable.sharp);
-        flat = ContextCompat.getDrawable(this.getContext(), R.drawable.flat);
-        darp = ContextCompat.getDrawable(this.getContext(), R.drawable.dsharp);
-        dflat = ContextCompat.getDrawable(this.getContext(), R.drawable.dflat);
+        note = ContextCompat.getDrawable(
+            this.getContext(), R.drawable.note);
+        sharp = ContextCompat.getDrawable(
+            this.getContext(), R.drawable.sharp);
+        flat = ContextCompat.getDrawable(
+            this.getContext(), R.drawable.flat);
+        dsharp = ContextCompat.getDrawable(
+            this.getContext(), R.drawable.dsharp);
+        dflat = ContextCompat.getDrawable(
+            this.getContext(), R.drawable.dflat);
     }
 
     public void addNote(NoteValue note, boolean isClose, boolean isSecond,
@@ -82,11 +93,7 @@ public class NotesView extends View {
         super.onDraw(canvas);
         Drawable accidental = sharp;
         // Draw notes from bottom to top, to avoid overlapping white borders
-        Collections.sort(note_positions, new Comparator<NotePosition>() {
-            public int compare(NotePosition a, NotePosition b) {
-                return a.height < b.height ? 1 : -1;
-            }
-        });
+        Collections.sort(note_positions, comp);
         for (NotePosition np : note_positions) {
             note.setBounds(np.position + noteXOffset, np.height + noteYOffset,
                 np.position + noteXOffset + note_width,
@@ -104,7 +111,7 @@ public class NotesView extends View {
                         accidental = sharp;
                         break;
                     case 2:
-                        accidental = darp;
+                        accidental = dsharp;
                         break;
                 }
                 accidental.setBounds(np.position - np.acciXOff,

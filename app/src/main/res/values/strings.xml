@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress CheckTagEmptyBody -->
 <resources>
     <string name="app_name">Kanon</string>
     <string name="settings">Settings</string>
@@ -22,6 +23,7 @@
     <string name="note_b">B</string>
     <string name="note_dsharp">x</string>
     <string name="note_sharp">#</string>
+    <string name="note_none"></string>
     <string name="note_flat">b</string>
     <string name="note_dflat">bb</string>
     <string name="interval">Interval Settings</string>

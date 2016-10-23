@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NoteValue {
+class NoteValue {
     private static final int[] LINE_MAP =
         { 0, -1, 1, -1, 2, 3, -3, 4, -4, 5, -5, 6 };
     private static final Map<Character, Integer> PITCH_MAP = makePitchMap();
     private static Map<Character, Integer> makePitchMap() {
-        Map<Character, Integer> res = new HashMap<Character, Integer>();
+        Map<Character, Integer> res = new HashMap<>();
         res.put('C', 0);
         res.put('D', 2);
         res.put('E', 4);
@@ -21,7 +21,7 @@ public class NoteValue {
     }
     private static final Map<String, Integer> ACCIDENTAL_MAP = makeAcciMap();
     private static Map<String, Integer> makeAcciMap() {
-        Map<String, Integer> res = new HashMap<String, Integer>();
+        Map<String, Integer> res = new HashMap<>();
         res.put("bb", -2);
         res.put("b", -1);
         res.put("", 0);

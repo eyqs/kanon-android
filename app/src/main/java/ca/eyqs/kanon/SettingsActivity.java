@@ -25,11 +25,6 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String[] QUALPERF_VALUES = { "d", "P", "A" };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.preferences, target);
     }
@@ -51,7 +46,8 @@ public class SettingsActivity extends PreferenceActivity {
             };
             ACCI_STRINGS = new String[]{
                 getString(R.string.note_dflat), getString(R.string.note_flat),
-                getString(R.string.note_sharp), getString(R.string.note_dsharp)
+                getString(R.string.note_none), getString(R.string.note_sharp),
+                getString(R.string.note_dsharp)
             };
             SIZE_STRINGS = new String[]{
                 getString(R.string.interval_0), getString(R.string.interval_1),
@@ -84,13 +80,13 @@ public class SettingsActivity extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_possible);
                 MultiSelectListPreference lp = (MultiSelectListPreference)
                     findPreference("pitch_list");
-                List<String> entries = new ArrayList<String>();
+                List<String> entries = new ArrayList<>();
                 for (String note : NOTE_STRINGS) {
                     for (String acci : ACCI_STRINGS) {
                         entries.add(note + acci);
                     }
                 }
-                List<String> entryValues = new ArrayList<String>();
+                List<String> entryValues = new ArrayList<>();
                 for (String note : NOTE_VALUES) {
                     for (String acci : ACCI_VALUES) {
                         entryValues.add(note + acci);
@@ -101,8 +97,8 @@ public class SettingsActivity extends PreferenceActivity {
 
                 lp = (MultiSelectListPreference)
                     findPreference("interval_list");
-                entries = new ArrayList<String>();
-                entryValues = new ArrayList<String>();
+                entries = new ArrayList<>();
+                entryValues = new ArrayList<>();
                 for (int i = 1; i <= 15; i++) {
                     if (MAJ_INTERVALS.contains(i)) {
                         for (String qual : QUALMAJ_STRINGS) {

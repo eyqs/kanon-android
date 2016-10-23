@@ -15,19 +15,34 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int SETTINGS_REQUEST = 1;
+    private static final int SETTINGS_REQUEST = 1;
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
+    private static final String DEFAULT_CLEF = "Treble";
+    private static final String[] DEFAULT_PITCH_ARRAY = {
+        "C", "D", "E", "F", "G", "A", "B"
+    };
+    private static final Set<String> DEFAULT_PITCHES =
+        new HashSet<>(Arrays.asList(DEFAULT_PITCH_ARRAY));
+    private static final String[] DEFAULT_INTERVAL_ARRAY = {
+        "P1", "m2", "M2", "m3", "M3", "P4", "A4",
+        "d5", "P5", "m6", "M6", "m7", "M7", "P8"
+    };
+    private static final Set<String> DEFAULT_INTERVALS =
+        new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
     private static final Map<String, Integer> CLEFRANGES = makeClefMap();
     private static Map<String, Integer> makeClefMap() {
-        Map<String, Integer> res = new HashMap<String, Integer>();
+        Map<String, Integer> res = new HashMap<>();
         res.put("Treble", 6);
         res.put("Alto", 0);
         res.put("Tenor", -2);
@@ -37,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private static final Map<Integer, Map<Integer, Character>> INTERVALS =
         makeIntervalMap();
     private static Map<Integer, Map<Integer, Character>> makeIntervalMap() {
-        Map<Integer, Map<Integer, Character>> res =
-            new HashMap<Integer, Map<Integer, Character>>();
+        Map<Integer, Map<Integer, Character>> res = new HashMap<>();
         for (int i = 1; i < 8; i++) {
             res.put(i, new HashMap<Integer, Character>());
         }
@@ -69,21 +83,34 @@ public class MainActivity extends AppCompatActivity {
         res.get(7).put(0, 'A');
         return Collections.unmodifiableMap(res);
     }
-    private static RadioGroup qualGroup;
-    private static RadioGroup size1;
-    private static RadioGroup size2;
-    private static RadioGroup size3;
+    private RadioGroup qualGroup;
+    private RadioGroup size1;
+    private RadioGroup size2;
+    private RadioGroup size3;
     private static boolean isChecking = true;
     private static char qualityGuess = '0';
     private static int sizeGuess = 0;
     private static char quality = '0';
     private static int size = 0;
-    private static String clef = "Treble";
+    private static String clef = DEFAULT_CLEF;
+    private static Set<String> pitches = DEFAULT_PITCHES;
+    private static Set<String> intervals = DEFAULT_INTERVALS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences sp = PreferenceManager
+            .getDefaultSharedPreferences(this);
+        SharedPreferences.Editor ed = sp.edit();
+        if (sp.getString("clef_list", null) == null) {
+            ed.putString("clef_list", DEFAULT_CLEF);
+        } if (sp.getStringSet("pitch_list", null) == null) {
+            ed.putStringSet("pitch_list", DEFAULT_PITCHES);
+        } if (sp.getStringSet("interval_list", null) == null) {
+            ed.putStringSet("interval_list", DEFAULT_INTERVALS);
+        }
+        ed.apply();
         setClef();
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
@@ -190,7 +217,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         if (requestCode == SETTINGS_REQUEST) {
-            setClef();
+            SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(this);
+            if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
+                clef = sp.getString("clef_list", DEFAULT_CLEF);
+                setClef();
+                generateInterval();
+            } if (!pitches.equals(
+                sp.getStringSet("pitch_list", DEFAULT_PITCHES))) {
+                pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
+                generateInterval();
+            } if (!intervals.equals(
+                sp.getStringSet("interval_list", DEFAULT_INTERVALS))) {
+                intervals =
+                    sp.getStringSet("interval_list", DEFAULT_INTERVALS);
+                generateInterval();
+            }
         }
     }
 
@@ -200,12 +242,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setClef() {
-        SharedPreferences sp = PreferenceManager
-            .getDefaultSharedPreferences(this);
-        if (!clef.equals(sp.getString("clef_list", "Treble"))) {
-            clef = sp.getString("clef_list", "Treble");
-            generateInterval();
-        }
         View v = findViewById(R.id.clef_image);
         switch (clef) {
             case "Treble":
@@ -220,7 +256,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
+    private final View.OnClickListener clickListener =
+        new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if (qualityGuess != '0' && sizeGuess != 0) {
@@ -342,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < count; i += 2) {
             short sample = (short) (0x7FFF *
                 Math.sin(2 * Math.PI * i / (44100.0 / freqHz)));
-            samples[i + 0] = sample;
+            samples[i] = sample;
             samples[i + 1] = sample;
         }
         AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
