@@ -25,6 +25,9 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SETTINGS_REQUEST = 1;
+    private static final double SAMPLE_FREQ = 44100.0;
+    private static final double MS_TO_S = 0.001;
+    private static final int SAMPLE_NUM = 0x7FFF;
     private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
     private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
@@ -42,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
     private static final Map<String, Integer> CLEFRANGES = makeClefMap();
     private static Map<String, Integer> makeClefMap() {
-        Map<String, Integer> res = new HashMap<>();
+        Map<String, Integer> res = new HashMap<>(4);
         res.put("Treble", 6);
         res.put("Alto", 0);
         res.put("Tenor", -2);
@@ -52,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
     private static final Map<Integer, Map<Integer, Character>> INTERVALS =
         makeIntervalMap();
     private static Map<Integer, Map<Integer, Character>> makeIntervalMap() {
-        Map<Integer, Map<Integer, Character>> res = new HashMap<>();
+        Map<Integer, Map<Integer, Character>> res = new HashMap<>(7);
         for (int i = 1; i < 8; i++) {
-            res.put(i, new HashMap<Integer, Character>());
+            res.put(i, new HashMap<Integer, Character>(4));
         }
         res.get(1).put(11, 'd');
         res.get(1).put(0, 'P');
@@ -140,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onCheckedChanged(RadioGroup group, int id) {
                     if (id != -1) {
                         RadioButton button = (RadioButton) findViewById(id);
-                        qualityGuess = ((String) button.getTag()).charAt(0);
+                        qualityGuess = ((CharSequence) button.getTag())
+                            .charAt(0);
                     }
                 }
             }
@@ -243,16 +247,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setClef() {
         View v = findViewById(R.id.clef_image);
-        switch (clef) {
-            case "Treble":
-                v.setBackgroundResource(R.drawable.treble);
-                break;
-            case "Alto":
-                v.setBackgroundResource(R.drawable.alto);
-                break;
-            case "Bass":
-                v.setBackgroundResource(R.drawable.bass);
-                break;
+        if (clef.equals("Treble")) {
+            v.setBackgroundResource(R.drawable.treble);
+        } else if (clef.equals("Alto")) {
+            v.setBackgroundResource(R.drawable.alto);
+        } else if (clef.equals("Bass")) {
+            v.setBackgroundResource(R.drawable.bass);
         }
     }
 
@@ -274,40 +274,21 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private NoteValue generateNote() {
+    private static NoteValue generateNote() {
         Random rand = new Random();
-        int index = rand.nextInt(NOTES.length);
-        char pitch = NOTES[index];
-        index = rand.nextInt(ACCIDENTALS.length);
-        String accidental = ACCIDENTALS[index];
+        char pitch = NOTES[rand.nextInt(NOTES.length)];
+        String accidental = ACCIDENTALS[rand.nextInt(ACCIDENTALS.length)];
         int octave = 2 + rand.nextInt(4);
-        switch (clef) {
-            case "Treble":
-                if (octave < 4) {
-                    return generateNote();
-                } else if (octave == 4 && pitch == 'C') {
-                    return generateNote();
-                } else if (octave == 5 && (pitch == 'A' || pitch == 'B')) {
-                    return generateNote();
-                }
-                break;
-            case "Alto":
-                if (octave > 4 || octave < 3) {
-                    return generateNote();
-                } else if (octave == 4 && pitch == 'B') {
-                    return generateNote();
-                } else if (octave == 3 && (pitch == 'C' || pitch == 'D')) {
-                    return generateNote();
-                }
-                break;
-            case "Bass":
-                if (octave > 3) {
-                    return generateNote();
-                } else if (octave == 2 &&
-                           (pitch == 'C' || pitch == 'D' || pitch == 'E')) {
-                    return generateNote();
-                }
-                break;
+        while ((clef.equals("Treble") && (octave < 4 ||
+                (octave == 4 && pitch == 'C') ||
+                (octave == 5 && (pitch == 'A' || pitch == 'B')))) ||
+               (clef.equals("Alto") && (octave > 4 || octave < 3 ||
+                (octave == 4 && pitch == 'B') ||
+                (octave == 3 && (pitch == 'C' || pitch == 'D')))) ||
+               (clef.equals("Bass") && (octave > 3 || (octave == 2 &&
+                (pitch == 'C' || pitch == 'D' || pitch == 'E'))))) {
+            pitch = NOTES[rand.nextInt(NOTES.length)];
+            octave = 2 + rand.nextInt(4);
         }
         return new NoteValue(Character.toString(pitch)
             + accidental + Integer.toString(octave));
@@ -373,16 +354,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */
-    private AudioTrack generateTone(double freqHz, int durationMs) {
-        int count = (int) (44100.0 * 2.0 * (durationMs / 1000.0)) & ~1;
+    private static AudioTrack generateTone(double freqHz, int durationMs) {
+        int count = (int) (SAMPLE_FREQ * 2 * (durationMs * MS_TO_S)) & ~1;
         short[] samples = new short[count];
         for (int i = 0; i < count; i += 2) {
-            short sample = (short) (0x7FFF *
-                Math.sin(2 * Math.PI * i / (44100.0 / freqHz)));
+            short sample = (short) (SAMPLE_NUM *
+                Math.sin(2 * Math.PI * i / (SAMPLE_FREQ / freqHz)));
             samples[i] = sample;
             samples[i + 1] = sample;
         }
-        AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
+        AudioTrack track = new AudioTrack(
+            AudioManager.STREAM_MUSIC, (int) SAMPLE_FREQ,
             AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT,
             count * (Short.SIZE / 8), AudioTrack.MODE_STATIC);
         track.write(samples, 0, count);

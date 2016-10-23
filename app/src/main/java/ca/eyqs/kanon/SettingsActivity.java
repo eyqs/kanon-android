@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SettingsActivity extends PreferenceActivity {
+    private static final String[] emptyArray = new String[0];
     private static final List<Integer> MAJ_INTERVALS =
         Arrays.asList(2, 3, 6, 7, 9, 10, 13, 14);
     private static String[] NOTE_STRINGS;
@@ -78,46 +79,46 @@ public class SettingsActivity extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_clef);
             } else if ("possible".equals(settings)) {
                 addPreferencesFromResource(R.xml.settings_possible);
-                MultiSelectListPreference lp = (MultiSelectListPreference)
-                    findPreference("pitch_list");
-                List<String> entries = new ArrayList<>();
+                List<String> pitch_entries = new ArrayList<>(35);
+                List<String> pitch_values = new ArrayList<>(35);
                 for (String note : NOTE_STRINGS) {
                     for (String acci : ACCI_STRINGS) {
-                        entries.add(note + acci);
+                        pitch_entries.add(note + acci);
                     }
                 }
-                List<String> entryValues = new ArrayList<>();
                 for (String note : NOTE_VALUES) {
                     for (String acci : ACCI_VALUES) {
-                        entryValues.add(note + acci);
+                        pitch_values.add(note + acci);
                     }
                 }
-                lp.setEntries(entries.toArray(new String[0]));
-                lp.setEntryValues(entryValues.toArray(new String[0]));
+                MultiSelectListPreference pitch_lp =
+                    (MultiSelectListPreference) findPreference("pitch_list");
+                pitch_lp.setEntries(pitch_entries.toArray(emptyArray));
+                pitch_lp.setEntryValues(pitch_values.toArray(emptyArray));
 
-                lp = (MultiSelectListPreference)
-                    findPreference("interval_list");
-                entries = new ArrayList<>();
-                entryValues = new ArrayList<>();
+                List<String> interval_entries = new ArrayList<>(53);
+                List<String> interval_values = new ArrayList<>(53);
                 for (int i = 1; i <= 15; i++) {
                     if (MAJ_INTERVALS.contains(i)) {
                         for (String qual : QUALMAJ_STRINGS) {
-                            entries.add(qual + SIZE_STRINGS[i]);
+                            interval_entries.add(qual + SIZE_STRINGS[i]);
                         }
                         for (String qual : QUALMAJ_VALUES) {
-                            entryValues.add(qual + Integer.toString(i));
+                            interval_values.add(qual + Integer.toString(i));
                         }
                     } else {
                         for (String qual : QUALPERF_STRINGS) {
-                            entries.add(qual + SIZE_STRINGS[i]);
+                            interval_entries.add(qual + SIZE_STRINGS[i]);
                         }
                         for (String qual : QUALPERF_VALUES) {
-                            entryValues.add(qual + Integer.toString(i));
+                            interval_values.add(qual + Integer.toString(i));
                         }
                     }
                 }
-                lp.setEntries(entries.toArray(new String[0]));
-                lp.setEntryValues(entryValues.toArray(new String[0]));
+                MultiSelectListPreference ival_lp = (MultiSelectListPreference)
+                    findPreference("interval_list");
+                ival_lp.setEntries(interval_entries.toArray(emptyArray));
+                ival_lp.setEntryValues(interval_values.toArray(emptyArray));
             }
         }
     }

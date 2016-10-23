@@ -9,7 +9,7 @@ class NoteValue {
         { 0, -1, 1, -1, 2, 3, -3, 4, -4, 5, -5, 6 };
     private static final Map<Character, Integer> PITCH_MAP = makePitchMap();
     private static Map<Character, Integer> makePitchMap() {
-        Map<Character, Integer> res = new HashMap<>();
+        Map<Character, Integer> res = new HashMap<>(7);
         res.put('C', 0);
         res.put('D', 2);
         res.put('E', 4);
@@ -21,7 +21,7 @@ class NoteValue {
     }
     private static final Map<String, Integer> ACCIDENTAL_MAP = makeAcciMap();
     private static Map<String, Integer> makeAcciMap() {
-        Map<String, Integer> res = new HashMap<>();
+        Map<String, Integer> res = new HashMap<>(5);
         res.put("bb", -2);
         res.put("b", -1);
         res.put("", 0);
@@ -33,7 +33,7 @@ class NoteValue {
     private final char pitch;
     private final int octave;
     private final int accidental;
-    public NoteValue(String name) {
+    NoteValue(String name) {
         pitch = name.charAt(0);
         octave = Integer.parseInt(
             name.substring(name.length() - 1, name.length()));

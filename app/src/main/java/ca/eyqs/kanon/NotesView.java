@@ -24,7 +24,8 @@ public class NotesView extends View {
     private final int noteXOffset;
     private final int noteYOffset;
     private final int acciYOffset;
-    private static final List<NotePosition> note_positions = new ArrayList<>();
+    private static final List<NotePosition> note_positions =
+        new ArrayList<>(20);
     private static Drawable note;
     private static Drawable sharp;
     private static Drawable flat;
@@ -32,6 +33,7 @@ public class NotesView extends View {
     private static Drawable dflat;
     private static final Comparator<NotePosition> comp =
         new Comparator<NotePosition>() {
+            @Override
             public int compare(NotePosition a, NotePosition b) {
                 return a.height < b.height ? 1 : -1;
             }
@@ -59,15 +61,15 @@ public class NotesView extends View {
         noteYOffset = (canvas_height - note_height) / 2;
         acciYOffset = (canvas_height - acci_height) / 2;
         note = ContextCompat.getDrawable(
-            this.getContext(), R.drawable.note);
+            getContext(), R.drawable.note);
         sharp = ContextCompat.getDrawable(
-            this.getContext(), R.drawable.sharp);
+            getContext(), R.drawable.sharp);
         flat = ContextCompat.getDrawable(
-            this.getContext(), R.drawable.flat);
+            getContext(), R.drawable.flat);
         dsharp = ContextCompat.getDrawable(
-            this.getContext(), R.drawable.dsharp);
+            getContext(), R.drawable.dsharp);
         dflat = ContextCompat.getDrawable(
-            this.getContext(), R.drawable.dflat);
+            getContext(), R.drawable.dflat);
     }
 
     public void addNote(NoteValue note, boolean isClose, boolean isSecond,
@@ -89,6 +91,7 @@ public class NotesView extends View {
         note_positions.clear();
     }
 
+    @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Drawable accidental = sharp;
@@ -100,19 +103,14 @@ public class NotesView extends View {
                 np.height + noteYOffset + note_height);
             note.draw(canvas);
             if (np.accidental != 0) {
-                switch (np.accidental) {
-                    case -2:
-                        accidental = dflat;
-                        break;
-                    case -1:
-                        accidental = flat;
-                        break;
-                    case 1:
-                        accidental = sharp;
-                        break;
-                    case 2:
-                        accidental = dsharp;
-                        break;
+                if (np.accidental == -2) {
+                    accidental = dflat;
+                } else if (np.accidental == -1) {
+                    accidental = flat;
+                } else if (np.accidental == 1) {
+                    accidental = sharp;
+                } else if (np.accidental == 2) {
+                    accidental = dsharp;
                 }
                 accidental.setBounds(np.position - np.acciXOff,
                     np.height + acciYOffset,
