@@ -33,6 +33,7 @@ class NoteValue {
         res.put("", 0);
         res.put("#", 1);
         res.put("x", 2);
+        res.put("o", 9999);
         return Collections.unmodifiableMap(res);
     }
     private static final Map<String, Integer> INTERVAL_MAP = makeIvalMap();
@@ -68,17 +69,36 @@ class NoteValue {
         res.put("A8", 13);
         return Collections.unmodifiableMap(res);
     };
+    private final String note;
     private final int midi;
     private final char pitch;
     private final int octave;
     private final int accidental;
 
     NoteValue(String name) {
+        note = name;
         pitch = name.charAt(0);
-        octave = Integer.parseInt(
-            name.substring(name.length() - 1, name.length()));
-        accidental = ACCIDENTAL_MAP.get(name.substring(1, name.length() - 1));
+        int octIndex = 1;
+        if (name.length() > 3 && "bb".equals(name.substring(1, 3))) {
+            octIndex = 3;
+        } else if (name.length() > 2 && (name.charAt(1) == 'b' ||
+                   name.charAt(1) == '#' || name.charAt(1) == 'x' ||
+                   name.charAt(1) == 'o')) {
+            octIndex = 2;
+        }
+        accidental = ACCIDENTAL_MAP.get(name.substring(1, octIndex));
+        octave = Integer.parseInt(name.substring(octIndex, name.length()));
         midi = (octave + 1) * 12 + PITCH_MAP.get(pitch) + accidental;
+    }
+
+    @Override
+    public String toString() {
+        return note;
+    }
+
+    @Override
+    public int hashCode() {
+        return note.hashCode();
     }
 
     public int getHeight(int middleCPosition) {
@@ -113,7 +133,7 @@ class NoteValue {
         char newPitch = WHITE_NOTES.get(pitchIndex);
 
         int currMidi = newOctave * 12 + PITCH_MAP.get(newPitch) + 12;
-        String newAcci = "ERROR";
+        String newAcci = "o";
         for (String acci : ACCIDENTAL_MAP.keySet()) {
             if (currMidi + ACCIDENTAL_MAP.get(acci) == newMidi) {
                 newAcci = acci;
