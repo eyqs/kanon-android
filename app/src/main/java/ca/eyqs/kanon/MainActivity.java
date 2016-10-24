@@ -15,10 +15,12 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Random;
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private static String clef = DEFAULT_CLEF;
     private static Set<String> pitches = DEFAULT_PITCHES;
     private static Set<String> intervals = DEFAULT_INTERVALS;
+    private static List<List<NoteValue>> possible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         }
         ed.apply();
         setClef();
+        generatePossibilities();
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
             0, RadioGroup.LayoutParams.MATCH_PARENT, 1);
@@ -237,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     sp.getStringSet("interval_list", DEFAULT_INTERVALS);
                 generateInterval();
             }
+            generatePossibilities();
         }
     }
 
@@ -273,6 +278,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    private static void generatePossibilities() {
+        Set<String> possible_notes = new HashSet<>();
+        for (String pitch : pitches) {
+            for (int octv = 0; octv <= 8; octv++) {
+                possible_notes.add(pitch + Integer.toString(octv));
+            }
+        }
+        possible = new ArrayList<>();
+        for (String root : possible_notes) {
+            for (String ival : intervals) {
+                List<NoteValue> interval = new ArrayList<>();
+                NoteValue bass = new NoteValue(root);
+                NoteValue treble = bass.transposeUp(ival);
+                if (possible_notes.contains(treble.toString())) {
+                    interval.add(bass);
+                    interval.add(treble);
+                    possible.add(interval);
+                }
+            }
+        }
+    }
 
     private static NoteValue generateNote() {
         Random rand = new Random();
