@@ -101,17 +101,25 @@ class NoteValue {
         return note.hashCode();
     }
 
-    public int getHeight(int middleCPosition) {
-        int line = LINE_MAP[PITCH_MAP.get(pitch) % 12];
-        return middleCPosition - line - 7 * (octave - 4);
+    public int getMidi() {
+        return midi;
+    }
+
+    public char getPitch() {
+        return pitch;
+    }
+
+    public int getOctave() {
+        return octave;
     }
 
     public int getAccidental() {
         return accidental;
     }
 
-    public int getMidi() {
-        return midi;
+    public int getHeight(int middleCPosition) {
+        int line = LINE_MAP[PITCH_MAP.get(pitch) % 12];
+        return middleCPosition - line - 7 * (octave - 4);
     }
 
     public NoteValue transposeUp(String interval) {
