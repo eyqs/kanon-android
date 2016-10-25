@@ -9,7 +9,7 @@
     <string name="clef_treble">Treble</string>
     <string name="clef_alto">Alto</string>
     <string name="clef_bass">Bass</string>
-    <string name="settings_range">Set clef ranges, in the format C#4-Bb6</string>
+    <string name="settings_range">Set clef ranges, with no accidentals, in this format: C4-B6</string>
     <string name="possible">Possible Settings</string>
     <string name="settings_possible">Set allowed pitches and intervals</string>
     <string name="pitch">Pitch Settings</string>

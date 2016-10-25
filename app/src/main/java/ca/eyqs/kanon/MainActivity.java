@@ -30,10 +30,16 @@ public class MainActivity extends AppCompatActivity {
     private static final double SAMPLE_FREQ = 44100.0;
     private static final double MS_TO_S = 0.001;
     private static final int SAMPLE_NUM = 0x7FFF;
-    private static final char[] NOTES = { 'C', 'D', 'E', 'F', 'G', 'A', 'B' };
-    private static final String[] ACCIDENTALS = { "bb", "b", "", "#", "x" };
+    private static final Character[] WHITENOTES_ARRAY = {
+        'C', 'D', 'E', 'F', 'G', 'A', 'B'
+    };
+    private static final List<Character> WHITENOTES
+        = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
+    private static final String DEFAULT_TREBLE = "D4-G5";
+    private static final String DEFAULT_ALTO = "E3-A4";
+    private static final String DEFAULT_BASS = "F2-B3";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -98,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     private static char quality = '0';
     private static int size = 0;
     private static String clef;
+    private static String[] trueRange;
+    private static Map<String, String> ranges;
     private static Set<String> pitches;
     private static Set<String> intervals;
     private static List<List<NoteValue>> possible;
@@ -115,12 +123,24 @@ public class MainActivity extends AppCompatActivity {
             ed.putStringSet("pitch_list", DEFAULT_PITCHES);
         } if (sp.getStringSet("interval_list", null) == null) {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
+        } if (sp.getString("range_treble", null) == null) {
+            ed.putString("range_treble", DEFAULT_TREBLE);
+        } if (sp.getString("range_alto", null) == null) {
+            ed.putString("range_alto", DEFAULT_ALTO);
+        } if (sp.getString("range_bass", null) == null) {
+            ed.putString("range_bass", DEFAULT_BASS);
         }
         ed.apply();
+
         clef = sp.getString("clef_list", DEFAULT_CLEF);
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
+        ranges = new HashMap<>(3);
+        ranges.put("treble", sp.getString("range_treble", DEFAULT_TREBLE));
+        ranges.put("alto", sp.getString("range_alto", DEFAULT_ALTO));
+        ranges.put("bass", sp.getString("range_bass", DEFAULT_BASS));
         setClef();
+        setRanges();
         generatePossibilities();
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
@@ -130,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
             params = new RadioGroup.LayoutParams(
                 RadioGroup.LayoutParams.MATCH_PARENT, 0, 1);
         }
+
         /** Made by ishitcno1 at https://gist.github.com/ishitcno1/9544243 */
         qualGroup = (RadioGroup) findViewById(R.id.interval_quality);
         for (int i = 0; i < 5; ++i) {
@@ -230,16 +251,26 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SETTINGS_REQUEST) {
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
+            Map<String, String> newRanges = new HashMap<>(3);
+            newRanges.put("treble",
+                sp.getString("range_treble", DEFAULT_TREBLE));
+            newRanges.put("alto",
+                sp.getString("range_alto", DEFAULT_ALTO));
+            newRanges.put("bass",
+                sp.getString("range_bass", DEFAULT_BASS));
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF)) ||
+                !ranges.equals(newRanges) ||
                 !pitches.equals(
                     sp.getStringSet("pitch_list", DEFAULT_PITCHES)) ||
                 !intervals.equals(
                     sp.getStringSet("interval_list", DEFAULT_INTERVALS))) {
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
+                ranges = newRanges;
                 pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
                 intervals =
                     sp.getStringSet("interval_list", DEFAULT_INTERVALS);
                 setClef();
+                setRanges();
                 generatePossibilities();
                 generateInterval();
             }
@@ -259,6 +290,16 @@ public class MainActivity extends AppCompatActivity {
             v.setBackgroundResource(R.drawable.alto);
         } else if (clef.equals("Bass")) {
             v.setBackgroundResource(R.drawable.bass);
+        }
+    }
+
+    private void setRanges() {
+        if (clef.equals("Treble")) {
+            trueRange = ranges.get("treble").split("-");
+        } else if (clef.equals("Alto")) {
+            trueRange = ranges.get("alto").split("-");
+        } else if (clef.equals("Bass")) {
+            trueRange = ranges.get("bass").split("-");
         }
     }
 
@@ -283,10 +324,20 @@ public class MainActivity extends AppCompatActivity {
     private static void generatePossibilities() {
         Set<String> possible_notes = new HashSet<>();
         for (String pitch : pitches) {
-            for (int octv = 0; octv < 10; octv++) {
+            if (WHITENOTES.indexOf(pitch.charAt(0)) >=
+                WHITENOTES.indexOf(trueRange[0].charAt(0))) {
+                possible_notes.add(pitch + trueRange[0].substring(1));
+            }
+            for (int octv = Integer.parseInt(trueRange[0].substring(1)) + 1;
+                 octv < Integer.parseInt(trueRange[1].substring(1)); octv++) {
                 possible_notes.add(pitch + Integer.toString(octv));
             }
+            if (WHITENOTES.indexOf(pitch.charAt(0)) <=
+                WHITENOTES.indexOf(trueRange[1].charAt(0))) {
+                possible_notes.add(pitch + trueRange[1].substring(1));
+            }
         }
+
         possible = new ArrayList<>();
         for (String root : possible_notes) {
             for (String ival : intervals) {
@@ -302,26 +353,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static boolean isBad(NoteValue a) {
-        int octave = a.getOctave();
-        char pitch = a.getPitch();
-        if (clef.equals("Treble")) {
-            return (octave > 5 || octave < 4 ||
-                (octave == 4 && pitch == 'C') ||
-                (octave == 5 && (pitch == 'A' || pitch == 'B')));
-        } else if (clef.equals("Alto")) {
-            return (octave > 4 || octave < 3 ||
-                (octave == 4 && pitch == 'B') ||
-                (octave == 3 && (pitch == 'C' || pitch == 'D')));
-        } else if (clef.equals("Bass")) {
-            return (octave > 3 || octave < 2 ||
-                (octave == 2 &&
-                (pitch == 'C' || pitch == 'D' || pitch == 'E')));
-        } else {
-            return true;
-        }
-    }
-
     private void generateInterval() {
         int middle = CLEFRANGES.get(clef);
         NotesView notes = (NotesView) findViewById(R.id.notes);
@@ -330,12 +361,10 @@ public class MainActivity extends AppCompatActivity {
         Random rand = new Random();
         NoteValue a;
         NoteValue b;
-        do {
-            List<NoteValue> interval = possible.get(
-                rand.nextInt(possible.size()));
-            a = interval.get(0);
-            b = interval.get(1);
-        } while (isBad(a) || isBad(b));
+        List<NoteValue> interval = possible.get(
+            rand.nextInt(possible.size()));
+        a = interval.get(0);
+        b = interval.get(1);
 
         int semitones;
         if (a.getHeight(middle) < b.getHeight(middle)) {
