@@ -1,5 +1,7 @@
 package ca.eyqs.kanon;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -12,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final double SAMPLE_FREQ = 44100.0;
     private static final double MS_TO_S = 0.001;
     private static final int SAMPLE_NUM = 0x7FFF;
+    private static final int INSUFFICIENT_LIMIT = 10;
     private static final Character[] WHITENOTES_ARRAY = {
         'C', 'D', 'E', 'F', 'G', 'A', 'B'
     };
@@ -249,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         if (requestCode == SETTINGS_REQUEST) {
+            boolean changed = false;
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
             Map<String, String> newRanges = new HashMap<>(3);
@@ -258,20 +263,30 @@ public class MainActivity extends AppCompatActivity {
                 sp.getString("range_alto", DEFAULT_ALTO));
             newRanges.put("bass",
                 sp.getString("range_bass", DEFAULT_BASS));
-            if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF)) ||
-                !ranges.equals(newRanges) ||
-                !pitches.equals(
-                    sp.getStringSet("pitch_list", DEFAULT_PITCHES)) ||
-                !intervals.equals(
-                    sp.getStringSet("interval_list", DEFAULT_INTERVALS))) {
+            if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
+                changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
+                setClef();
+            } if (!ranges.equals(newRanges)) {
+                changed = true;
                 ranges = newRanges;
+                setRanges();
+            } if (!pitches.equals(
+                sp.getStringSet("pitch_list", DEFAULT_PITCHES))) {
+                changed = true;
                 pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
+            } if (!intervals.equals(
+                sp.getStringSet("interval_list", DEFAULT_INTERVALS))) {
+                changed = true;
                 intervals =
                     sp.getStringSet("interval_list", DEFAULT_INTERVALS);
-                setClef();
-                setRanges();
+            }
+
+            if (changed) {
                 generatePossibilities();
+                if (possible.size() < INSUFFICIENT_LIMIT) {
+                    alertInsufficientChords();
+                }
                 generateInterval();
             }
         }
@@ -321,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private static void generatePossibilities() {
+    private void generatePossibilities() {
         Set<String> possible_notes = new HashSet<>();
         for (String pitch : pitches) {
             if (WHITENOTES.indexOf(pitch.charAt(0)) >=
@@ -412,6 +427,30 @@ public class MainActivity extends AppCompatActivity {
             notes.addNote(b, false, false, middle);
         }
         notes.invalidate();
+    }
+
+    private void alertInsufficientChords() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Only " + Integer.toString(possible.size()) +
+            " distinct intervals match your pitch, range, and interval " +
+            "settings.\n\nAre you sure you would like to continue?");
+        builder.setCancelable(false);
+        builder.setNegativeButton("Back to settings",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    Button btn = (Button) findViewById(R.id.settings_btn);
+                    changeSettings(btn);
+                }
+            });
+        builder.setPositiveButton("Continue",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */
