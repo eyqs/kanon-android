@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Integer> res = new HashMap<>(4);
         res.put("Treble", 6);
         res.put("Alto", 0);
-        res.put("Tenor", -2);
         res.put("Bass", -6);
         return Collections.unmodifiableMap(res);
     }
@@ -102,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup size1;
     private RadioGroup size2;
     private RadioGroup size3;
+    private static boolean badChordsConfirmed = false;
     private static boolean isChecking = true;
     private static char qualityGuess = '0';
     private static int sizeGuess = 0;
@@ -246,7 +246,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
-        generateInterval();
+        runChangedApp();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        runChangedApp();
     }
 
     @Override
@@ -267,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
                 setClef();
+                setRanges();
             } if (!ranges.equals(newRanges)) {
                 changed = true;
                 ranges = newRanges;
@@ -283,12 +290,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (changed) {
+                badChordsConfirmed = false;
                 generatePossibilities();
-                if (possible.size() < INSUFFICIENT_LIMIT) {
-                    alertInsufficientChords();
-                }
-                generateInterval();
             }
+        }
+    }
+
+    private void runChangedApp() {
+        if (possible.isEmpty()) {
+            alertNoChords();
+        } else if (!badChordsConfirmed) {
+            badChordsConfirmed = true;
+            if (possible.size() < INSUFFICIENT_LIMIT) {
+                alertInsufficientChords();
+            }
+            generateInterval();
         }
     }
 
@@ -337,29 +353,39 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void generatePossibilities() {
-        Set<String> possible_notes = new HashSet<>();
-        for (String pitch : pitches) {
-            if (WHITENOTES.indexOf(pitch.charAt(0)) >=
-                WHITENOTES.indexOf(trueRange[0].charAt(0))) {
-                possible_notes.add(pitch + trueRange[0].substring(1));
+        Set<String> possibleNotes = new HashSet<>();
+        int lowPitchIndex = WHITENOTES.indexOf(trueRange[0].charAt(0));
+        int highPitchIndex = WHITENOTES.indexOf(trueRange[1].charAt(0));
+        int lowOctave = Integer.parseInt(trueRange[0].substring(1));
+        int highOctave = Integer.parseInt(trueRange[1].substring(1));
+        if (lowOctave == highOctave) {
+            for (String pitch : pitches) {
+                if (WHITENOTES.indexOf(pitch.charAt(0)) >= lowPitchIndex &&
+                    WHITENOTES.indexOf(pitch.charAt(0)) <= highPitchIndex) {
+                    possibleNotes.add(pitch + Integer.toString(lowOctave));
+                }
             }
-            for (int octv = Integer.parseInt(trueRange[0].substring(1)) + 1;
-                 octv < Integer.parseInt(trueRange[1].substring(1)); octv++) {
-                possible_notes.add(pitch + Integer.toString(octv));
-            }
-            if (WHITENOTES.indexOf(pitch.charAt(0)) <=
-                WHITENOTES.indexOf(trueRange[1].charAt(0))) {
-                possible_notes.add(pitch + trueRange[1].substring(1));
+        } else if (lowOctave < highOctave) {
+            for (String pitch : pitches) {
+                if (WHITENOTES.indexOf(pitch.charAt(0)) >= lowPitchIndex) {
+                    possibleNotes.add(pitch + Integer.toString(lowOctave));
+                }
+                for (int octv = lowOctave + 1; octv < highOctave; octv++) {
+                    possibleNotes.add(pitch + Integer.toString(octv));
+                }
+                if (WHITENOTES.indexOf(pitch.charAt(0)) <= highPitchIndex) {
+                    possibleNotes.add(pitch + Integer.toString(highOctave));
+                }
             }
         }
 
         possible = new ArrayList<>();
-        for (String root : possible_notes) {
+        for (String root : possibleNotes) {
             for (String ival : intervals) {
                 List<NoteValue> interval = new ArrayList<>();
                 NoteValue bass = new NoteValue(root);
                 NoteValue treble = bass.transposeUp(ival);
-                if (possible_notes.contains(treble.toString())) {
+                if (possibleNotes.contains(treble.toString())) {
                     interval.add(bass);
                     interval.add(treble);
                     possible.add(interval);
@@ -429,18 +455,46 @@ public class MainActivity extends AppCompatActivity {
         notes.invalidate();
     }
 
+    private void alertNoChords() {
+        NotesView notes = (NotesView) findViewById(R.id.notes);
+        notes.clear();
+        notes.invalidate();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("No intervals match your pitch, range, and " +
+            "interval settings.\n\nPlease adjust the settings and try again.");
+        builder.setCancelable(false);
+        builder.setNegativeButton("Back to settings",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Button btn = (Button) findViewById(R.id.settings_btn);
+                    changeSettings(btn);
+                    dialog.cancel();
+                }
+            });
+        builder.setPositiveButton("Quit",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory( Intent.CATEGORY_HOME );
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    dialog.cancel();
+                }
+            });
+        builder.show();
+    }
+
     private void alertInsufficientChords() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Only " + Integer.toString(possible.size()) +
             " distinct intervals match your pitch, range, and interval " +
             "settings.\n\nAre you sure you would like to continue?");
-        builder.setCancelable(false);
         builder.setNegativeButton("Back to settings",
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
                     Button btn = (Button) findViewById(R.id.settings_btn);
                     changeSettings(btn);
+                    dialog.cancel();
                 }
             });
         builder.setPositiveButton("Continue",
@@ -449,8 +503,7 @@ public class MainActivity extends AppCompatActivity {
                     dialog.cancel();
                 }
             });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.show();
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */
