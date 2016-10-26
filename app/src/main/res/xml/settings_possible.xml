@@ -4,7 +4,9 @@
     <MultiSelectListPreference
         android:key="pitch_list"
         android:title="@string/pitch"
-        android:entries="@array/pitch_array"
-        android:entryValues="@array/pitch_array"
-        android:defaultValue="@array/pitch_default" />
+        android:summary="@string/settings_pitch" />
+    <MultiSelectListPreference
+        android:key="interval_list"
+        android:title="@string/interval"
+        android:summary="@string/settings_interval" />
 </PreferenceScreen>

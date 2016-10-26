@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress CheckTagEmptyBody -->
 <resources>
     <string name="app_name">Kanon</string>
     <string name="settings">Settings</string>
@@ -7,11 +9,50 @@
     <string name="clef_treble">Treble</string>
     <string name="clef_alto">Alto</string>
     <string name="clef_bass">Bass</string>
-    <string name="settings_range">Set clef ranges, in the format C#4-Bb6</string>
+    <string name="settings_range">Set clef ranges, with no accidentals, in this format: C4-B6</string>
+    <string name="possible">Possible Settings</string>
+    <string name="settings_possible">Set allowed pitches and intervals</string>
     <string name="pitch">Pitch Settings</string>
     <string name="settings_pitch">Select available pitches</string>
+    <string name="note_c">C</string>
+    <string name="note_d">D</string>
+    <string name="note_e">E</string>
+    <string name="note_f">F</string>
+    <string name="note_g">G</string>
+    <string name="note_a">A</string>
+    <string name="note_b">B</string>
+    <string name="note_dsharp">x</string>
+    <string name="note_sharp">#</string>
+    <string name="note_none"></string>
+    <string name="note_flat">b</string>
+    <string name="note_dflat">bb</string>
     <string name="interval">Interval Settings</string>
-    <string name="interval_simple">Simple Intervals</string>
-    <string name="interval_compound">Compound Intervals</string>
     <string name="settings_interval">Select possible intervals</string>
+    <string name="interval_0">0</string>
+    <string name="interval_1">1</string>
+    <string name="interval_2">2</string>
+    <string name="interval_3">3</string>
+    <string name="interval_4">4</string>
+    <string name="interval_5">5</string>
+    <string name="interval_6">6</string>
+    <string name="interval_7">7</string>
+    <string name="interval_8">8</string>
+    <string name="interval_9">9</string>
+    <string name="interval_10">10</string>
+    <string name="interval_11">11</string>
+    <string name="interval_12">12</string>
+    <string name="interval_13">13</string>
+    <string name="interval_14">14</string>
+    <string name="interval_15">15</string>
+    <string name="interval_diminished">d</string>
+    <string name="interval_minor">m</string>
+    <string name="interval_perfect">P</string>
+    <string name="interval_major">M</string>
+    <string name="interval_augmented">A</string>
+    <string name="alert_quit">Quit</string>
+    <string name="alert_continue">Continue</string>
+    <string name="alert_settings">Back to settings</string>
+    <string name="alert_range">Your clef range settings exceed the boundaries of this app.\n\nPlease decrease the range and try again.</string>
+    <string name="alert_nochords">No intervals match your pitch, range, and interval settings.\n\nPlease adjust the settings and try again.</string>
+    <string name="alert_fewchords">\u0020intervals match your pitch, range, and interval settings.\n\nYou may encounter many duplicates.</string>
 </resources>

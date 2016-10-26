@@ -1,3 +1,19 @@
+/* Kanon v1.1
+ * Copyright (c) 2016 Eugene Y. Q. Shen.
+ *
+ * Kanon is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ *
+ * Kanon is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 package ca.eyqs.kanon;
 
 import android.content.Context;
@@ -24,12 +40,20 @@ public class NotesView extends View {
     private final int noteXOffset;
     private final int noteYOffset;
     private final int acciYOffset;
-    private static List<NotePosition> note_positions = new ArrayList();
+    private static final List<NotePosition> note_positions =
+        new ArrayList<>(20);
     private static Drawable note;
     private static Drawable sharp;
     private static Drawable flat;
-    private static Drawable darp;
+    private static Drawable dsharp;
     private static Drawable dflat;
+    private static final Comparator<NotePosition> comp =
+        new Comparator<NotePosition>() {
+            @Override
+            public int compare(NotePosition a, NotePosition b) {
+                return a.height < b.height ? 1 : -1;
+            }
+        };
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -52,11 +76,16 @@ public class NotesView extends View {
         noteXOffset = acci_width + acci_padding;
         noteYOffset = (canvas_height - note_height) / 2;
         acciYOffset = (canvas_height - acci_height) / 2;
-        note = ContextCompat.getDrawable(this.getContext(), R.drawable.note);
-        sharp = ContextCompat.getDrawable(this.getContext(), R.drawable.sharp);
-        flat = ContextCompat.getDrawable(this.getContext(), R.drawable.flat);
-        darp = ContextCompat.getDrawable(this.getContext(), R.drawable.dsharp);
-        dflat = ContextCompat.getDrawable(this.getContext(), R.drawable.dflat);
+        note = ContextCompat.getDrawable(
+            getContext(), R.drawable.note);
+        sharp = ContextCompat.getDrawable(
+            getContext(), R.drawable.sharp);
+        flat = ContextCompat.getDrawable(
+            getContext(), R.drawable.flat);
+        dsharp = ContextCompat.getDrawable(
+            getContext(), R.drawable.dsharp);
+        dflat = ContextCompat.getDrawable(
+            getContext(), R.drawable.dflat);
     }
 
     public void addNote(NoteValue note, boolean isClose, boolean isSecond,
@@ -78,34 +107,26 @@ public class NotesView extends View {
         note_positions.clear();
     }
 
+    @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Drawable accidental = sharp;
         // Draw notes from bottom to top, to avoid overlapping white borders
-        Collections.sort(note_positions, new Comparator<NotePosition>() {
-            public int compare(NotePosition a, NotePosition b) {
-                return a.height < b.height ? 1 : -1;
-            }
-        });
+        Collections.sort(note_positions, comp);
         for (NotePosition np : note_positions) {
             note.setBounds(np.position + noteXOffset, np.height + noteYOffset,
                 np.position + noteXOffset + note_width,
                 np.height + noteYOffset + note_height);
             note.draw(canvas);
             if (np.accidental != 0) {
-                switch (np.accidental) {
-                    case -2:
-                        accidental = dflat;
-                        break;
-                    case -1:
-                        accidental = flat;
-                        break;
-                    case 1:
-                        accidental = sharp;
-                        break;
-                    case 2:
-                        accidental = darp;
-                        break;
+                if (np.accidental == -2) {
+                    accidental = dflat;
+                } else if (np.accidental == -1) {
+                    accidental = flat;
+                } else if (np.accidental == 1) {
+                    accidental = sharp;
+                } else if (np.accidental == 2) {
+                    accidental = dsharp;
                 }
                 accidental.setBounds(np.position - np.acciXOff,
                     np.height + acciYOffset,

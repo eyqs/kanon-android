@@ -5,9 +5,8 @@
         android:key="clef_list"
         android:title="@string/clef"
         android:summary="@string/settings_clef"
-        android:defaultValue="@string/clef_treble"
         android:entries="@array/clef_array"
-        android:entryValues="@array/clef_array" />
+        android:entryValues="@array/clef_values" />
     <PreferenceCategory
         android:title="@string/settings_range">
         <EditTextPreference
