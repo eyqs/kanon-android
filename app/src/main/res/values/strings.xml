@@ -49,4 +49,10 @@
     <string name="interval_perfect">P</string>
     <string name="interval_major">M</string>
     <string name="interval_augmented">A</string>
+    <string name="alert_quit">Quit</string>
+    <string name="alert_continue">Continue</string>
+    <string name="alert_settings">Back to settings</string>
+    <string name="alert_range">Your clef range settings exceed the boundaries of this app.\n\nPlease decrease the range and try again.</string>
+    <string name="alert_nochords">No intervals match your pitch, range, and interval settings.\n\nPlease adjust the settings and try again.</string>
+    <string name="alert_fewchords">\u0020intervals match your pitch, range, and interval settings.\n\nYou may encounter many duplicates.</string>
 </resources>

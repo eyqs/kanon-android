@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String DEFAULT_TREBLE = "D4-G5";
-    private static final String DEFAULT_ALTO = "E3-A4";
-    private static final String DEFAULT_BASS = "F2-B3";
+    private static final String RANGE_LIMIT_TREBLE = "D4-G5";
+    private static final String RANGE_LIMIT_ALTO = "E3-A4";
+    private static final String RANGE_LIMIT_BASS = "F2-B3";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final Set<String> DEFAULT_INTERVALS =
         new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
-    private static final Map<String, Integer> CLEFRANGES = makeClefMap();
+    private static final Map<String, Integer> CLEF_RANGES = makeClefMap();
     private static Map<String, Integer> makeClefMap() {
         Map<String, Integer> res = new HashMap<>(4);
         res.put("Treble", 6);
@@ -128,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
         } if (sp.getStringSet("interval_list", null) == null) {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
         } if (sp.getString("range_treble", null) == null) {
-            ed.putString("range_treble", DEFAULT_TREBLE);
+            ed.putString("range_treble", RANGE_LIMIT_TREBLE);
         } if (sp.getString("range_alto", null) == null) {
-            ed.putString("range_alto", DEFAULT_ALTO);
+            ed.putString("range_alto", RANGE_LIMIT_ALTO);
         } if (sp.getString("range_bass", null) == null) {
-            ed.putString("range_bass", DEFAULT_BASS);
+            ed.putString("range_bass", RANGE_LIMIT_BASS);
         }
         ed.apply();
 
@@ -140,9 +140,9 @@ public class MainActivity extends AppCompatActivity {
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
         ranges = new HashMap<>(3);
-        ranges.put("treble", sp.getString("range_treble", DEFAULT_TREBLE));
-        ranges.put("alto", sp.getString("range_alto", DEFAULT_ALTO));
-        ranges.put("bass", sp.getString("range_bass", DEFAULT_BASS));
+        ranges.put("Treble", sp.getString("range_treble", RANGE_LIMIT_TREBLE));
+        ranges.put("Alto", sp.getString("range_alto", RANGE_LIMIT_ALTO));
+        ranges.put("Bass", sp.getString("range_bass", RANGE_LIMIT_BASS));
         setClef();
         setRanges();
         generatePossibilities();
@@ -263,12 +263,12 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
             Map<String, String> newRanges = new HashMap<>(3);
-            newRanges.put("treble",
-                sp.getString("range_treble", DEFAULT_TREBLE));
-            newRanges.put("alto",
-                sp.getString("range_alto", DEFAULT_ALTO));
-            newRanges.put("bass",
-                sp.getString("range_bass", DEFAULT_BASS));
+            newRanges.put("Treble",
+                sp.getString("range_treble", RANGE_LIMIT_TREBLE));
+            newRanges.put("Alto",
+                sp.getString("range_alto", RANGE_LIMIT_ALTO));
+            newRanges.put("Bass",
+                sp.getString("range_bass", RANGE_LIMIT_BASS));
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
@@ -297,7 +297,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runChangedApp() {
-        if (possible.isEmpty()) {
+        if (isOutOfRange()) {
+            alertOutOfRange();
+        } else if (possible.isEmpty()) {
             alertNoChords();
         } else if (!badChordsConfirmed) {
             badChordsConfirmed = true;
@@ -325,13 +327,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setRanges() {
-        if (clef.equals("Treble")) {
-            trueRange = ranges.get("treble").split("-");
-        } else if (clef.equals("Alto")) {
-            trueRange = ranges.get("alto").split("-");
-        } else if (clef.equals("Bass")) {
-            trueRange = ranges.get("bass").split("-");
-        }
+        trueRange = ranges.get(clef).split("-");
     }
 
     private final View.OnClickListener clickListener =
@@ -395,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
-        int middle = CLEFRANGES.get(clef);
+        int middle = CLEF_RANGES.get(clef);
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
 
@@ -455,15 +451,40 @@ public class MainActivity extends AppCompatActivity {
         notes.invalidate();
     }
 
-    private void alertNoChords() {
+    private boolean isOutOfRange() {
+        String[] limitRange = RANGE_LIMIT_TREBLE.split("-");
+        if (clef.equals("Treble")) {
+            limitRange = RANGE_LIMIT_TREBLE.split("-");
+        } else if (clef.equals("Alto")) {
+            limitRange = RANGE_LIMIT_ALTO.split("-");
+        } else if (clef.equals("Bass")) {
+            limitRange = RANGE_LIMIT_BASS.split("-");
+        }
+        System.out.println(trueRange[0]);
+        System.out.println(trueRange[1]);
+        System.out.println(limitRange[0]);
+        System.out.println(limitRange[1]);
+        int lowPitch = WHITENOTES.indexOf(trueRange[0].charAt(0));
+        int highPitch = WHITENOTES.indexOf(trueRange[1].charAt(0));
+        int lowOctave = Integer.parseInt(trueRange[0].substring(1));
+        int highOctave = Integer.parseInt(trueRange[1].substring(1));
+        int lowLimitPitch = WHITENOTES.indexOf(limitRange[0].charAt(0));
+        int highLimitPitch = WHITENOTES.indexOf(limitRange[1].charAt(0));
+        int lowLimitOctave = Integer.parseInt(limitRange[0].substring(1));
+        int highLimitOctave = Integer.parseInt(limitRange[1].substring(1));
+        return (lowOctave < lowLimitOctave || highOctave > highLimitOctave ||
+                (lowOctave == lowLimitOctave && lowPitch < lowLimitPitch) ||
+                (highOctave == highLimitOctave && highPitch > highLimitPitch));
+    }
+
+    private void alertOutOfRange() {
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
         notes.invalidate();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("No intervals match your pitch, range, and " +
-            "interval settings.\n\nPlease adjust the settings and try again.");
+        builder.setMessage(getString(R.string.alert_range));
         builder.setCancelable(false);
-        builder.setNegativeButton("Back to settings",
+        builder.setNegativeButton(getString(R.string.alert_settings),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Button btn = (Button) findViewById(R.id.settings_btn);
@@ -471,7 +492,35 @@ public class MainActivity extends AppCompatActivity {
                     dialog.cancel();
                 }
             });
-        builder.setPositiveButton("Quit",
+        builder.setPositiveButton(getString(R.string.alert_quit),
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory( Intent.CATEGORY_HOME );
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    dialog.cancel();
+                }
+            });
+        builder.show();
+    }
+
+    private void alertNoChords() {
+        NotesView notes = (NotesView) findViewById(R.id.notes);
+        notes.clear();
+        notes.invalidate();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.alert_nochords));
+        builder.setCancelable(false);
+        builder.setNegativeButton(R.string.alert_settings,
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Button btn = (Button) findViewById(R.id.settings_btn);
+                    changeSettings(btn);
+                    dialog.cancel();
+                }
+            });
+        builder.setPositiveButton(R.string.alert_quit,
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -486,10 +535,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void alertInsufficientChords() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Only " + Integer.toString(possible.size()) +
-            " distinct intervals match your pitch, range, and interval " +
-            "settings.\n\nAre you sure you would like to continue?");
-        builder.setNegativeButton("Back to settings",
+        builder.setMessage(Integer.toString(possible.size()) +
+            getString(R.string.alert_fewchords));
+        builder.setNegativeButton(getString(R.string.alert_settings),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Button btn = (Button) findViewById(R.id.settings_btn);
@@ -497,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
                     dialog.cancel();
                 }
             });
-        builder.setPositiveButton("Continue",
+        builder.setPositiveButton(getString(R.string.alert_continue),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
