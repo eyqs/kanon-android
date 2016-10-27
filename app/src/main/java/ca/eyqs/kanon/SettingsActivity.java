@@ -112,8 +112,8 @@ public class SettingsActivity extends PreferenceActivity {
                 pitch_lp.setEntries(pitch_entries.toArray(emptyArray));
                 pitch_lp.setEntryValues(pitch_values.toArray(emptyArray));
 
-                List<String> interval_entries = new ArrayList<>(53);
-                List<String> interval_values = new ArrayList<>(53);
+                List<String> interval_entries = new ArrayList<>(52);
+                List<String> interval_values = new ArrayList<>(52);
                 for (int i = 1; i <= 15; i++) {
                     if (MAJ_INTERVALS.contains(i)) {
                         for (String qual : QUALMAJ_STRINGS) {
@@ -131,6 +131,8 @@ public class SettingsActivity extends PreferenceActivity {
                         }
                     }
                 }
+                interval_entries.remove(getString(R.string.interval_diminished)
+                    + SIZE_STRINGS[1]);
                 MultiSelectListPreference ival_lp = (MultiSelectListPreference)
                     findPreference("interval_list");
                 ival_lp.setEntries(interval_entries.toArray(emptyArray));

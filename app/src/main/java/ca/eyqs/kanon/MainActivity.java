@@ -420,13 +420,8 @@ public class MainActivity extends AppCompatActivity {
         b = interval.get(1);
 
         int semitones;
-        if (a.getHeight(middle) < b.getHeight(middle)) {
-            size = b.getHeight(middle) - a.getHeight(middle);
-            semitones = a.getMidi() - b.getMidi();
-        } else {
-            size = a.getHeight(middle) - b.getHeight(middle);
-            semitones = b.getMidi() - a.getMidi();
-        }
+        size = Math.abs(a.getHeight(middle) - b.getHeight(middle));
+        semitones = Math.abs(a.getMidi() - b.getMidi());
         quality = INTERVALS.get(size % 7 + 1).get(semitones % 12);
         size += 1;
 
