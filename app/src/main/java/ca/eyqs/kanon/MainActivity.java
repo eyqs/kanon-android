@@ -16,8 +16,6 @@
  */
 package ca.eyqs.kanon;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -341,21 +339,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void runChangedApp() {
         if (isOutOfRange()) {
-            alertOutOfRange();
+            showAlertDialog("out_of_range");
         } else if (possible.isEmpty()) {
-            alertNoChords();
+            showAlertDialog("no_chords");
         } else if (!badChordsConfirmed) {
             badChordsConfirmed = true;
             if (possible.size() < INSUFFICIENT_LIMIT) {
-                alertInsufficientChords();
+                showAlertDialog("few_chords");
             }
             generateInterval();
         }
     }
 
+    public void changeSettings() {
+        Button btn = (Button) findViewById(R.id.settings_btn);
+        changeSettings(btn);
+    }
+
     public void changeSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivityForResult(intent, SETTINGS_REQUEST);
+    }
+
+    public void quitActivity() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory( Intent.CATEGORY_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private void setClef() {
@@ -511,81 +521,31 @@ public class MainActivity extends AppCompatActivity {
                 (highOctave == highLimitOctave && highPitch > highLimitPitch));
     }
 
-    private void alertOutOfRange() {
+    private void showAlertDialog(String error) {
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
         notes.invalidate();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.alert_range));
-        builder.setCancelable(false);
-        builder.setNegativeButton(getString(R.string.alert_settings),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(getString(R.string.alert_quit),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory( Intent.CATEGORY_HOME );
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    dialog.cancel();
-                }
-            });
-        builder.show();
-    }
-
-    private void alertNoChords() {
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
-        notes.invalidate();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.alert_nochords));
-        builder.setCancelable(false);
-        builder.setNegativeButton(R.string.alert_settings,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(R.string.alert_quit,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory( Intent.CATEGORY_HOME );
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    dialog.cancel();
-                }
-            });
-        builder.show();
-    }
-
-    private void alertInsufficientChords() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(Integer.toString(possible.size()) +
-            getString(R.string.alert_fewchords));
-        builder.setNegativeButton(getString(R.string.alert_settings),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(getString(R.string.alert_continue),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            });
-        builder.show();
+        AlertFragment alert = new AlertFragment();
+        Bundle args = new Bundle();
+        switch (error) {
+        case "out_of_range":
+            args.putString("message", getString(R.string.alert_range));
+            args.putString("positive", getString(R.string.alert_quit));
+            break;
+        case "no_chords":
+            args.putString("message", getString(R.string.alert_nochords));
+            args.putString("positive", getString(R.string.alert_quit));
+            break;
+        case "few_chords":
+            args.putString("message", Integer.toString(possible.size()) +
+                getString(R.string.alert_fewchords));
+            args.putString("positive", getString(R.string.alert_continue));
+            break;
+        default:
+        }
+        alert.setArguments(args);
+        alert.setCancelable(false);
+        alert.show(getFragmentManager(), "alert");
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */
