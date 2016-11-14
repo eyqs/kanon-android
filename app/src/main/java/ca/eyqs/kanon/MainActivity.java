@@ -27,10 +27,12 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -262,6 +264,33 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
+
+        LinearLayout mainStaff = (LinearLayout) findViewById(R.id.main_staff);
+        int lineColour = ContextCompat.getColor(this, R.color.colorStaffLine);
+        int staffLineThickness = (int) getResources().
+            getDimension(R.dimen.staff_line_thickness);
+        int staffSpaceThickness = (int) getResources().
+            getDimension(R.dimen.staff_space_thickness);
+        LinearLayout.LayoutParams slineParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, staffLineThickness, 0);
+        LinearLayout.LayoutParams sspaceParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, staffSpaceThickness, 0);
+        LinearLayout.LayoutParams lastParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1);
+        for (int i = 1; i < 5; ++i) {
+            View line = new View(this);
+            line.setBackgroundColor(lineColour);
+            line.setLayoutParams(slineParams);
+            mainStaff.addView(line);
+            View space = new View(this);
+            space.setLayoutParams(sspaceParams);
+            mainStaff.addView(space);
+        }
+        View line = new View(this);
+        line.setBackgroundColor(lineColour);
+        line.setLayoutParams(slineParams);
+        mainStaff.addView(line);
+
         runChangedApp();
     }
 

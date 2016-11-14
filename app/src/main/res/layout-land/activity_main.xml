@@ -11,10 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:paddingBottom="@dimen/land_bottom_padding">
+        android:layout_marginBottom="@dimen/land_bottom_padding">
         <LinearLayout android:id="@+id/staff_contents"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
             <Space
@@ -37,42 +37,9 @@
         </LinearLayout>
         <LinearLayout android:id="@+id/main_staff"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical" />
     </RelativeLayout>
     <LinearLayout
         android:layout_width="wrap_content"
