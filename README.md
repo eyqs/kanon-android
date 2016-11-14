@@ -14,8 +14,8 @@ allowed intervals and pitches, and much, much more (to come in the future)!
 ### Features
 
 - Three different clefs! No tenor clef, because who cares about tenors!
-- Adjust different allowed note ranges for each clef, using the
-standard scientific pitch notation that nobody uses and nobody knows!
+- Adjust different allowed note ranges for each clef,
+with the standard scientific pitch notation that nobody uses!
 - Select the same allowed intervals and pitches for every clef! You have to!
 - Never crashes unexpectedly! You should always expect it to crash!!
 - No ledger lines allowed!!!
@@ -38,4 +38,4 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 [license.md]:       ../master/LICENSE.md
-[Google Play]:      https://play.google.com/apps/testing/ca.eyqs.kanon
+[Google Play]:      https://play.google.com/store/apps/details?id=ca.eyqs.kanon

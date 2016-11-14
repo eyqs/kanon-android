@@ -16,8 +16,6 @@
  */
 package ca.eyqs.kanon;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -27,10 +25,12 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -57,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String RANGE_LIMIT_TREBLE = "D4-G5";
-    private static final String RANGE_LIMIT_ALTO = "E3-A4";
-    private static final String RANGE_LIMIT_BASS = "F2-B3";
+    private static final String RANGE_LIMIT_TREBLE = "F3-E6";
+    private static final String RANGE_LIMIT_ALTO = "G2-F5";
+    private static final String RANGE_LIMIT_BASS = "A1-G4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -262,6 +262,31 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
+
+        LinearLayout mainStaff = (LinearLayout) findViewById(R.id.main_staff);
+        int lineColour = ContextCompat.getColor(this, R.color.colorStaffLine);
+        int staffLineThickness = (int) getResources().
+            getDimension(R.dimen.staff_line_thickness);
+        int staffSpaceThickness = (int) getResources().
+            getDimension(R.dimen.staff_space_thickness);
+        LinearLayout.LayoutParams slineParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, staffLineThickness, 0);
+        LinearLayout.LayoutParams sspaceParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, staffSpaceThickness, 0);
+        for (int i = 1; i < 5; ++i) {
+            View line = new View(this);
+            line.setBackgroundColor(lineColour);
+            line.setLayoutParams(slineParams);
+            mainStaff.addView(line);
+            View space = new View(this);
+            space.setLayoutParams(sspaceParams);
+            mainStaff.addView(space);
+        }
+        View line = new View(this);
+        line.setBackgroundColor(lineColour);
+        line.setLayoutParams(slineParams);
+        mainStaff.addView(line);
+
         runChangedApp();
     }
 
@@ -314,21 +339,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void runChangedApp() {
         if (isOutOfRange()) {
-            alertOutOfRange();
+            showAlertDialog("out_of_range");
         } else if (possible.isEmpty()) {
-            alertNoChords();
+            showAlertDialog("no_chords");
         } else if (!badChordsConfirmed) {
             badChordsConfirmed = true;
             if (possible.size() < INSUFFICIENT_LIMIT) {
-                alertInsufficientChords();
+                showAlertDialog("few_chords");
             }
             generateInterval();
         }
     }
 
+    public void changeSettings() {
+        Button btn = (Button) findViewById(R.id.settings_btn);
+        changeSettings(btn);
+    }
+
     public void changeSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivityForResult(intent, SETTINGS_REQUEST);
+    }
+
+    public void quitActivity() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory( Intent.CATEGORY_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private void setClef() {
@@ -484,81 +521,31 @@ public class MainActivity extends AppCompatActivity {
                 (highOctave == highLimitOctave && highPitch > highLimitPitch));
     }
 
-    private void alertOutOfRange() {
+    private void showAlertDialog(String error) {
         NotesView notes = (NotesView) findViewById(R.id.notes);
         notes.clear();
         notes.invalidate();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.alert_range));
-        builder.setCancelable(false);
-        builder.setNegativeButton(getString(R.string.alert_settings),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(getString(R.string.alert_quit),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory( Intent.CATEGORY_HOME );
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    dialog.cancel();
-                }
-            });
-        builder.show();
-    }
-
-    private void alertNoChords() {
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
-        notes.invalidate();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.alert_nochords));
-        builder.setCancelable(false);
-        builder.setNegativeButton(R.string.alert_settings,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(R.string.alert_quit,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory( Intent.CATEGORY_HOME );
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    dialog.cancel();
-                }
-            });
-        builder.show();
-    }
-
-    private void alertInsufficientChords() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(Integer.toString(possible.size()) +
-            getString(R.string.alert_fewchords));
-        builder.setNegativeButton(getString(R.string.alert_settings),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Button btn = (Button) findViewById(R.id.settings_btn);
-                    changeSettings(btn);
-                    dialog.cancel();
-                }
-            });
-        builder.setPositiveButton(getString(R.string.alert_continue),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            });
-        builder.show();
+        AlertFragment alert = new AlertFragment();
+        Bundle args = new Bundle();
+        switch (error) {
+        case "out_of_range":
+            args.putString("message", getString(R.string.alert_range));
+            args.putString("positive", getString(R.string.alert_quit));
+            break;
+        case "no_chords":
+            args.putString("message", getString(R.string.alert_nochords));
+            args.putString("positive", getString(R.string.alert_quit));
+            break;
+        case "few_chords":
+            args.putString("message", Integer.toString(possible.size()) +
+                getString(R.string.alert_fewchords));
+            args.putString("positive", getString(R.string.alert_continue));
+            break;
+        default:
+        }
+        alert.setArguments(args);
+        alert.setCancelable(false);
+        alert.show(getFragmentManager(), "alert");
     }
 
     /** Made by slightfoot at https://gist.github.com/slightfoot/6330866 */

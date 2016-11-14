@@ -37,40 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_space_thickness" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/staff_line_thickness"
-                android:background="@color/colorStaffLine" />
-        </LinearLayout>
+            android:orientation="vertical" />
     </RelativeLayout>
     <Space
         android:layout_width="match_parent"
