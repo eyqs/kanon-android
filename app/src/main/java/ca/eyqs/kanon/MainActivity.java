@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String RANGE_LIMIT_TREBLE = "D4-G5";
-    private static final String RANGE_LIMIT_ALTO = "E3-A4";
-    private static final String RANGE_LIMIT_BASS = "F2-B3";
+    private static final String RANGE_LIMIT_TREBLE = "E3-F6";
+    private static final String RANGE_LIMIT_ALTO = "F2-G5";
+    private static final String RANGE_LIMIT_BASS = "G1-A4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -275,8 +275,6 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams.MATCH_PARENT, staffLineThickness, 0);
         LinearLayout.LayoutParams sspaceParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, staffSpaceThickness, 0);
-        LinearLayout.LayoutParams lastParams = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1);
         for (int i = 1; i < 5; ++i) {
             View line = new View(this);
             line.setBackgroundColor(lineColour);

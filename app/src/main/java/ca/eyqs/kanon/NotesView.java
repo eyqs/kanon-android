@@ -18,6 +18,7 @@ package ca.eyqs.kanon;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -36,10 +37,14 @@ public class NotesView extends View {
     private final int acci_padding;
     private final int acci_width;
     private final int acci_height;
+    private final int ledger_width;
+    private final int ledger_height;
     private final int staff_spacing;
     private final int noteXOffset;
     private final int noteYOffset;
     private final int acciYOffset;
+    private final int ledgerXOffset;
+    private final int ledgerYOffset;
     private static final List<NotePosition> note_positions =
         new ArrayList<>(20);
     private static Drawable note;
@@ -54,6 +59,7 @@ public class NotesView extends View {
                 return a.height < b.height ? 1 : -1;
             }
         };
+    private final Paint paint = new Paint();
 
     public NotesView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -71,11 +77,17 @@ public class NotesView extends View {
             R.dimen.acci_width);
         acci_height = (int) context.getResources().getDimension(
             R.dimen.acci_height);
+        ledger_width = (int) context.getResources().getDimension(
+            R.dimen.ledger_width);
+        ledger_height = (int) context.getResources().getDimension(
+            R.dimen.ledger_line_thickness);
         staff_spacing = (int) context.getResources().getDimension(
             R.dimen.staff_spacing);
         noteXOffset = acci_width + acci_padding;
         noteYOffset = (canvas_height - note_height) / 2;
         acciYOffset = (canvas_height - acci_height) / 2;
+        ledgerXOffset = noteXOffset + (note_width - ledger_width) / 2;
+        ledgerYOffset = canvas_height / 2;
         note = ContextCompat.getDrawable(
             getContext(), R.drawable.note);
         sharp = ContextCompat.getDrawable(
@@ -86,6 +98,9 @@ public class NotesView extends View {
             getContext(), R.drawable.dsharp);
         dflat = ContextCompat.getDrawable(
             getContext(), R.drawable.dflat);
+        paint.setColor(ContextCompat.getColor(
+            context, R.color.colorStaffLine));
+        paint.setStrokeWidth(ledger_height);
     }
 
     public void addNote(NoteValue note, boolean isClose, boolean isSecond,
@@ -94,13 +109,22 @@ public class NotesView extends View {
         if (isSecond) {
             x = second_offset + acci_width;
         }
-        int y = note.getHeight(staff_middle) * staff_spacing;
+        int relHeight = note.getHeight(staff_middle);
+        int y = relHeight * staff_spacing;
         int a = note.getAccidental();
+        int l = 0;
+        if (relHeight < -5) {
+            l = (relHeight + 4) / 2;
+        } else if (relHeight > 5) {
+            l = (relHeight - 4) / 2;
+        }
+        System.out.println(relHeight);
+        System.out.println(l);
         int c = 0;
         if (isClose) {
             c = acci_width;
         }
-        note_positions.add(new NotePosition(x, y, a, c));
+        note_positions.add(new NotePosition(x, y, l, a, c));
     }
 
     public void clear() {
@@ -118,6 +142,7 @@ public class NotesView extends View {
                 np.position + noteXOffset + note_width,
                 np.height + noteYOffset + note_height);
             note.draw(canvas);
+
             if (np.accidental != 0) {
                 if (np.accidental == -2) {
                     accidental = dflat;
@@ -133,6 +158,24 @@ public class NotesView extends View {
                     np.position - np.acciXOff + acci_width,
                     np.height + acciYOffset + acci_height);
                 accidental.draw(canvas);
+            }
+
+            int ledgerX = np.position + ledgerXOffset;
+            int currHeight = ledgerYOffset;
+            if (np.ledgers < 0) {
+                currHeight -= 6 * staff_spacing;
+                for (int i = 0; i < -np.ledgers; i++) {
+                    canvas.drawLine(ledgerX, currHeight,
+                        ledgerX + ledger_width, currHeight, paint);
+                    currHeight -= 2 * staff_spacing;
+                }
+            } else if (np.ledgers > 0) {
+                currHeight += 6 * staff_spacing;
+                for (int i = 0; i < np.ledgers; i++) {
+                    canvas.drawLine(ledgerX, currHeight,
+                        ledgerX + ledger_width, currHeight, paint);
+                    currHeight += 2 * staff_spacing;
+                }
             }
         }
     }

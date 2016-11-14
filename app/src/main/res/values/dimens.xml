@@ -12,14 +12,18 @@
     <dimen name="acci_padding">8dp</dimen>
     <dimen name="acci_width">32dp</dimen>
     <dimen name="acci_height">76dp</dimen>
-    <dimen name="notes_width">160dp</dimen>
-    <!-- 2 * (acci_width + acci_padding + note_width) -->
-    <dimen name="notes_height">202dp</dimen>
-    <!-- 11 * staff_line-thickness + 10 * staff_space_thickness -->
     <dimen name="staff_line_thickness">2dp</dimen>
     <dimen name="staff_space_thickness">18dp</dimen>
+    <dimen name="ledger_line_thickness">4dp</dimen>
+    <dimen name="ledger_space_thickness">16dp</dimen>
+    <dimen name="ledger_width">60dp</dimen>
     <dimen name="staff_spacing">10dp</dimen>
-    <!-- (staff_line_thickness + staff_space_thickness) / 2 -->
+    <!-- (staff_line_thickness + staff_space_thickness) / 2
+       = (ledger_line_thickness + ledger_space_thickness) / 2 -->
+    <dimen name="notes_width">160dp</dimen>
+    <!-- 2 * (acci_width + acci_padding + note_width) -->
+    <dimen name="notes_height">360dp</dimen>
+    <!-- 18 * staff_spacing -->
     <dimen name="button_height">50dp</dimen>
     <dimen name="button_width">80dp</dimen>
     <dimen name="land_bottom_padding">100dp</dimen>
