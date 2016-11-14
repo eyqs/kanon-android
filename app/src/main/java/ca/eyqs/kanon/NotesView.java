@@ -39,6 +39,7 @@ public class NotesView extends View {
     private final int acci_height;
     private final int ledger_width;
     private final int ledger_height;
+    private final int acci_ledger_offset;
     private final int staff_spacing;
     private final int noteXOffset;
     private final int noteYOffset;
@@ -81,6 +82,8 @@ public class NotesView extends View {
             R.dimen.ledger_width);
         ledger_height = (int) context.getResources().getDimension(
             R.dimen.ledger_line_thickness);
+        acci_ledger_offset = (int) context.getResources().getDimension(
+            R.dimen.acci_ledger_width);
         staff_spacing = (int) context.getResources().getDimension(
             R.dimen.staff_spacing);
         noteXOffset = acci_width + acci_padding;
@@ -118,8 +121,6 @@ public class NotesView extends View {
         } else if (relHeight > 5) {
             l = (relHeight - 4) / 2;
         }
-        System.out.println(relHeight);
-        System.out.println(l);
         int c = 0;
         if (isClose) {
             c = acci_width;
@@ -143,7 +144,9 @@ public class NotesView extends View {
                 np.height + noteYOffset + note_height);
             note.draw(canvas);
 
+            int acciLedgerOffset = 0;
             if (np.accidental != 0) {
+                acciLedgerOffset = acci_ledger_offset;
                 if (np.accidental == -2) {
                     accidental = dflat;
                 } else if (np.accidental == -1) {
@@ -161,21 +164,25 @@ public class NotesView extends View {
             }
 
             int ledgerX = np.position + ledgerXOffset;
-            int currHeight = ledgerYOffset;
+            int height = ledgerYOffset;
             if (np.ledgers < 0) {
-                currHeight -= 6 * staff_spacing;
-                for (int i = 0; i < -np.ledgers; i++) {
-                    canvas.drawLine(ledgerX, currHeight,
-                        ledgerX + ledger_width, currHeight, paint);
-                    currHeight -= 2 * staff_spacing;
+                height -= 6 * staff_spacing;
+                for (int i = 0; i < -np.ledgers - 1; i++) {
+                    canvas.drawLine(ledgerX, height,
+                        ledgerX + ledger_width, height, paint);
+                    height -= 2 * staff_spacing;
                 }
+                canvas.drawLine(ledgerX + acciLedgerOffset, height,
+                    ledgerX + ledger_width, height, paint);
             } else if (np.ledgers > 0) {
-                currHeight += 6 * staff_spacing;
-                for (int i = 0; i < np.ledgers; i++) {
-                    canvas.drawLine(ledgerX, currHeight,
-                        ledgerX + ledger_width, currHeight, paint);
-                    currHeight += 2 * staff_spacing;
+                height += 6 * staff_spacing;
+                for (int i = 0; i < np.ledgers - 1; i++) {
+                    canvas.drawLine(ledgerX, height,
+                        ledgerX + ledger_width, height, paint);
+                    height += 2 * staff_spacing;
                 }
+                canvas.drawLine(ledgerX + acciLedgerOffset, height,
+                    ledgerX + ledger_width, height, paint);
             }
         }
     }

@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String RANGE_LIMIT_TREBLE = "E3-F6";
-    private static final String RANGE_LIMIT_ALTO = "F2-G5";
-    private static final String RANGE_LIMIT_BASS = "G1-A4";
+    private static final String RANGE_LIMIT_TREBLE = "F3-E6";
+    private static final String RANGE_LIMIT_ALTO = "G2-F5";
+    private static final String RANGE_LIMIT_BASS = "A1-G4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
