@@ -1,4 +1,4 @@
-/* Kanon v1.1
+/* Kanon v1.2
  * Copyright (c) 2016 Eugene Y. Q. Shen.
  *
  * Kanon is free software: you can redistribute it and/or
@@ -133,6 +133,7 @@ public class SettingsActivity extends PreferenceActivity {
                 }
                 interval_entries.remove(getString(R.string.interval_diminished)
                     + SIZE_STRINGS[1]);
+                interval_values.remove("d1");
                 MultiSelectListPreference ival_lp = (MultiSelectListPreference)
                     findPreference("interval_list");
                 ival_lp.setEntries(interval_entries.toArray(emptyArray));

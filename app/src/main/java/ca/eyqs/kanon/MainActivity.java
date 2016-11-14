@@ -1,4 +1,4 @@
-/* Kanon v1.1
+/* Kanon v1.2
  * Copyright (c) 2016 Eugene Y. Q. Shen.
  *
  * Kanon is free software: you can redistribute it and/or
