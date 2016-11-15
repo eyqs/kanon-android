@@ -26,8 +26,8 @@ public class AlertFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final String message = getArguments().getString("message");
-        final String positive = getArguments().getString("positive");
+        final String message = getArguments().getString("message", "");
+        final String positive = getArguments().getString("positive", "");
         final MainActivity main = (MainActivity) getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
         builder.setMessage(message);
