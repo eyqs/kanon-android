@@ -371,11 +371,11 @@ public class MainActivity extends AppCompatActivity {
     private void setClef() {
         View v = findViewById(R.id.clef_image);
         if (clef.equals("Treble")) {
-            v.setBackgroundResource(R.drawable.treble);
+            v.setBackgroundResource(R.drawable.gclef);
         } else if (clef.equals("Alto")) {
-            v.setBackgroundResource(R.drawable.alto);
+            v.setBackgroundResource(R.drawable.cclef);
         } else if (clef.equals("Bass")) {
-            v.setBackgroundResource(R.drawable.bass);
+            v.setBackgroundResource(R.drawable.fclef);
         }
     }
 
