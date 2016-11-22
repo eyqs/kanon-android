@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
         res.get(7).put(0, 'A');
         return Collections.unmodifiableMap(res);
     }
+    private NotesView notesView;
+    private ClefView clefView;
     private RadioGroup qualGroup;
     private RadioGroup size1;
     private RadioGroup size2;
@@ -134,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        notesView = (NotesView) findViewById(R.id.notes);
+        clefView = (ClefView) findViewById(R.id.clef);
+
         SharedPreferences sp = PreferenceManager
             .getDefaultSharedPreferences(this);
         SharedPreferences.Editor ed = sp.edit();
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         ranges.put("Treble", sp.getString("range_treble", RANGE_LIMIT_TREBLE));
         ranges.put("Alto", sp.getString("range_alto", RANGE_LIMIT_ALTO));
         ranges.put("Bass", sp.getString("range_bass", RANGE_LIMIT_BASS));
-        setClef();
+        clefView.setClef(clef);
         setRanges();
         generatePossibilities();
 
@@ -313,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
-                setClef();
+                clefView.setClef(clef);
                 setRanges();
             } if (!ranges.equals(newRanges)) {
                 changed = true;
@@ -366,18 +371,6 @@ public class MainActivity extends AppCompatActivity {
         intent.addCategory( Intent.CATEGORY_HOME );
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-    }
-
-    private void setClef() {
-        /*
-        View v = findViewById(R.id.clef_image);
-        if (clef.equals("Treble")) {
-            v.setBackgroundResource(R.drawable.gclef);
-        } else if (clef.equals("Alto")) {
-            v.setBackgroundResource(R.drawable.cclef);
-        } else if (clef.equals("Bass")) {
-            v.setBackgroundResource(R.drawable.fclef);
-        }*/
     }
 
     private void setRanges() {
@@ -446,8 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateInterval() {
         int middle = CLEF_RANGES.get(clef);
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
+        notesView.clear();
 
         Random rand = new Random();
         NoteValue a;
@@ -491,13 +483,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            notes.addNote(a, aIsClose, aIsSecond, middle);
-            notes.addNote(b, bIsClose, bIsSecond, middle);
+            notesView.addNote(a, aIsClose, aIsSecond, middle);
+            notesView.addNote(b, bIsClose, bIsSecond, middle);
         } else {
-            notes.addNote(a, false, false, middle);
-            notes.addNote(b, false, false, middle);
+            notesView.addNote(a, false, false, middle);
+            notesView.addNote(b, false, false, middle);
         }
-        notes.invalidate();
+        notesView.invalidate();
     }
 
     private boolean isOutOfRange() {
@@ -523,9 +515,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAlertDialog(String error) {
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
-        notes.invalidate();
+        notesView.clear();
+        notesView.invalidate();
         AlertFragment alert = new AlertFragment();
         Bundle args = new Bundle();
         switch (error) {

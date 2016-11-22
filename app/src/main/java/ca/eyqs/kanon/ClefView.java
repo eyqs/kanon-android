@@ -32,6 +32,7 @@ public class ClefView extends View {
     private static Drawable gclef;
     private static Drawable cclef;
     private static Drawable fclef;
+    private static Drawable clef;
 
     public ClefView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,10 +51,20 @@ public class ClefView extends View {
             getContext(), R.drawable.fclef);
     }
 
+    public void setClef(String new_clef) {
+        if (new_clef.equals("Treble")) {
+            clef = gclef;
+        } else if (new_clef.equals("Alto")) {
+            clef = cclef;
+        } else if (new_clef.equals("Bass")) {
+            clef = fclef;
+        }
+    }
+
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        gclef.setBounds(0, base_height, clef_width, base_height + clef_height);
-        gclef.draw(canvas);
+        clef.setBounds(0, base_height, clef_width, base_height + clef_height);
+        clef.draw(canvas);
     }
 }
