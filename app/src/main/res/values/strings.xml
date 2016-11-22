@@ -8,6 +8,7 @@
     <string name="long_settings_clef">Choose a clef and adjust clef ranges</string>
     <string name="clef_treble">Treble</string>
     <string name="clef_alto">Alto</string>
+    <string name="clef_tenor">Tenor</string>
     <string name="clef_bass">Bass</string>
     <string name="settings_range">Set clef ranges, with no accidentals, in this format: C4-B6</string>
     <string name="possible">Possible Settings</string>

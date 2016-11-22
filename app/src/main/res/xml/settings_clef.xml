@@ -16,6 +16,9 @@
             android:key="range_alto"
             android:title="@string/clef_alto" />
         <EditTextPreference
+            android:key="range_tenor"
+            android:title="@string/clef_tenor" />
+        <EditTextPreference
             android:key="range_bass"
             android:title="@string/clef_bass" />
     </PreferenceCategory>

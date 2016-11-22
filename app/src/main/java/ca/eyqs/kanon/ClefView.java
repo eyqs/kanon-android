@@ -28,11 +28,13 @@ public class ClefView extends View {
     private final int canvas_height;
     private final int clef_height;
     private final int clef_width;
+    private final int staff_spacing;
     private final int base_height;
     private static Drawable gclef;
     private static Drawable cclef;
     private static Drawable fclef;
     private static Drawable clef;
+    private static int height;
 
     public ClefView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,6 +44,8 @@ public class ClefView extends View {
             R.dimen.clef_image_height);
         clef_width = (int) context.getResources().getDimension(
             R.dimen.clef_width);
+        staff_spacing = (int) context.getResources().getDimension(
+            R.dimen.staff_spacing);
         base_height = (canvas_height - clef_height) / 2;
         gclef = ContextCompat.getDrawable(
             getContext(), R.drawable.gclef);
@@ -54,17 +58,24 @@ public class ClefView extends View {
     public void setClef(String new_clef) {
         if (new_clef.equals("Treble")) {
             clef = gclef;
+            height = 0;
         } else if (new_clef.equals("Alto")) {
             clef = cclef;
+            height = 0;
+        } else if (new_clef.equals("Tenor")) {
+            clef = cclef;
+            height = -2;
         } else if (new_clef.equals("Bass")) {
             clef = fclef;
+            height = 0;
         }
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        clef.setBounds(0, base_height, clef_width, base_height + clef_height);
+        clef.setBounds(0, base_height + height * staff_spacing,
+            clef_width, base_height + height * staff_spacing + clef_height);
         clef.draw(canvas);
     }
 }

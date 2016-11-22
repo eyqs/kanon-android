@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEFAULT_CLEF = "Treble";
     private static final String RANGE_LIMIT_TREBLE = "F3-E6";
     private static final String RANGE_LIMIT_ALTO = "G2-F5";
+    private static final String RANGE_LIMIT_TENOR = "E2-D5";
     private static final String RANGE_LIMIT_BASS = "A1-G4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Integer> res = new HashMap<>(4);
         res.put("Treble", 6);
         res.put("Alto", 0);
+        res.put("Tenor", -2);
         res.put("Bass", -6);
         return Collections.unmodifiableMap(res);
     }
@@ -150,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
         } if (sp.getString("range_treble", null) == null) {
             ed.putString("range_treble", RANGE_LIMIT_TREBLE);
+        } if (sp.getString("range_tenor", null) == null) {
+            ed.putString("range_tenor", RANGE_LIMIT_TENOR);
         } if (sp.getString("range_alto", null) == null) {
             ed.putString("range_alto", RANGE_LIMIT_ALTO);
         } if (sp.getString("range_bass", null) == null) {
@@ -163,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         ranges = new HashMap<>(3);
         ranges.put("Treble", sp.getString("range_treble", RANGE_LIMIT_TREBLE));
         ranges.put("Alto", sp.getString("range_alto", RANGE_LIMIT_ALTO));
+        ranges.put("Tenor", sp.getString("range_tenor", RANGE_LIMIT_TENOR));
         ranges.put("Bass", sp.getString("range_bass", RANGE_LIMIT_BASS));
         clefView.setClef(clef);
         setRanges();
@@ -313,6 +318,8 @@ public class MainActivity extends AppCompatActivity {
                 sp.getString("range_treble", RANGE_LIMIT_TREBLE));
             newRanges.put("Alto",
                 sp.getString("range_alto", RANGE_LIMIT_ALTO));
+            newRanges.put("Tenor",
+                sp.getString("range_tenor", RANGE_LIMIT_TENOR));
             newRanges.put("Bass",
                 sp.getString("range_bass", RANGE_LIMIT_BASS));
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
@@ -498,6 +505,8 @@ public class MainActivity extends AppCompatActivity {
             limitRange = RANGE_LIMIT_TREBLE.split("-");
         } else if (clef.equals("Alto")) {
             limitRange = RANGE_LIMIT_ALTO.split("-");
+        } else if (clef.equals("Tenor")) {
+            limitRange = RANGE_LIMIT_TENOR.split("-");
         } else if (clef.equals("Bass")) {
             limitRange = RANGE_LIMIT_BASS.split("-");
         }
