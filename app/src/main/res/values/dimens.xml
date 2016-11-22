@@ -5,7 +5,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="clef_padding">16dp</dimen>
     <dimen name="clef_width">54dp</dimen>
-    <dimen name="clef_height">152dp</dimen>
+    <dimen name="clef_image_height">152dp</dimen>
+    <dimen name="clef_height">192dp</dimen>
+    <!-- clef_image_height + 4 * staff_spacing -->
     <dimen name="note_width">40dp</dimen>
     <dimen name="note_height">22dp</dimen>
     <dimen name="second_offset">36dp</dimen>
