@@ -17,9 +17,13 @@
 package ca.eyqs.kanon;
 
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,9 +96,51 @@ public class SettingsActivity extends PreferenceActivity {
             };
             String settings = getArguments().getString("settings");
             if ("clef".equals(settings)) {
-                addPreferencesFromResource(R.xml.settings_clef);
+                addPreferencesFromResource(R.xml.preferences_empty);
+                PreferenceScreen ps = this.getPreferenceScreen();
+                ListPreference clef_lp = new ListPreference(ps.getContext());
+                clef_lp.setKey("clef_list");
+                clef_lp.setTitle(getString(R.string.clef));
+                clef_lp.setSummary(getString(R.string.settings_clef));
+                clef_lp.setEntries(
+                    getResources().getStringArray(R.array.clef_array));
+                clef_lp.setEntryValues(
+                    getResources().getStringArray(R.array.clef_values));
+                ps.addPreference(clef_lp);
+
+                PreferenceCategory pc =
+                    new PreferenceCategory(ps.getContext());
+                pc.setTitle(getString(R.string.settings_range));
+                ps.addPreference(pc);
+
+                EditTextPreference ep_treble =
+                    new EditTextPreference(ps.getContext());
+                ep_treble.setKey("range_treble");
+                ep_treble.setTitle(getString(R.string.clef_treble));
+                ps.addPreference(ep_treble);
+                EditTextPreference ep_alto =
+                    new EditTextPreference(ps.getContext());
+                ep_alto.setKey("range_alto");
+                ep_alto.setTitle(getString(R.string.clef_alto));
+                ps.addPreference(ep_alto);
+                EditTextPreference ep_tenor =
+                    new EditTextPreference(ps.getContext());
+                ep_tenor.setKey("range_tenor");
+                ep_tenor.setTitle(getString(R.string.clef_tenor));
+                ps.addPreference(ep_tenor);
+                EditTextPreference ep_bass =
+                    new EditTextPreference(ps.getContext());
+                ep_bass.setKey("range_bass");
+                ep_bass.setTitle(getString(R.string.clef_bass));
+                ps.addPreference(ep_bass);
             } else if ("possible".equals(settings)) {
-                addPreferencesFromResource(R.xml.settings_possible);
+                addPreferencesFromResource(R.xml.preferences_empty);
+                PreferenceScreen ps = this.getPreferenceScreen();
+                MultiSelectListPreference pitch_lp =
+                    new MultiSelectListPreference(ps.getContext());
+                pitch_lp.setKey("pitch_list");
+                pitch_lp.setTitle(getString(R.string.pitch));
+                pitch_lp.setSummary(getString(R.string.settings_pitch));
                 List<String> pitch_entries = new ArrayList<>(35);
                 List<String> pitch_values = new ArrayList<>(35);
                 for (String note : NOTE_STRINGS) {
@@ -107,11 +153,15 @@ public class SettingsActivity extends PreferenceActivity {
                         pitch_values.add(note + acci);
                     }
                 }
-                MultiSelectListPreference pitch_lp =
-                    (MultiSelectListPreference) findPreference("pitch_list");
                 pitch_lp.setEntries(pitch_entries.toArray(emptyArray));
                 pitch_lp.setEntryValues(pitch_values.toArray(emptyArray));
+                ps.addPreference(pitch_lp);
 
+                MultiSelectListPreference ival_lp =
+                    new MultiSelectListPreference(ps.getContext());
+                ival_lp.setKey("interval_list");
+                ival_lp.setTitle(getString(R.string.interval));
+                ival_lp.setSummary(getString(R.string.settings_interval));
                 List<String> interval_entries = new ArrayList<>(52);
                 List<String> interval_values = new ArrayList<>(52);
                 for (int i = 1; i <= 15; i++) {
@@ -134,10 +184,9 @@ public class SettingsActivity extends PreferenceActivity {
                 interval_entries.remove(getString(R.string.interval_diminished)
                     + SIZE_STRINGS[1]);
                 interval_values.remove("d1");
-                MultiSelectListPreference ival_lp = (MultiSelectListPreference)
-                    findPreference("interval_list");
                 ival_lp.setEntries(interval_entries.toArray(emptyArray));
                 ival_lp.setEntryValues(interval_values.toArray(emptyArray));
+                ps.addPreference(ival_lp);
             }
         }
     }
