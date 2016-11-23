@@ -68,34 +68,14 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final Set<String> DEFAULT_INTERVALS =
         new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
-    private static final Map<String, String> CLEF_RANGE_KEYS =
-        makeClefKeyMap();
-    private static Map<String, String> makeClefKeyMap() {
-        Map<String, String> res = new HashMap<>(4);
-        res.put("Treble", "range_treble");
-        res.put("Alto", "range_alto");
-        res.put("Tenor", "range_tenor");
-        res.put("Bass", "range_bass");
-        return Collections.unmodifiableMap(res);
-    }
-    private static final Map<String, String> CLEF_RANGE_LIMITS =
-        makeClefRangeMap();
-    private static Map<String, String> makeClefRangeMap() {
-        Map<String, String> res = new HashMap<>(4);
-        res.put("Treble", "F3-E6");
-        res.put("Alto", "G2-F5");
-        res.put("Tenor", "E2-D5");
-        res.put("Bass", "A1-G4");
-        return Collections.unmodifiableMap(res);
-    }
-    private static final Map<String, Integer> CLEF_HEIGHTS =
-        makeClefHeightMap();
-    private static Map<String, Integer> makeClefHeightMap() {
-        Map<String, Integer> res = new HashMap<>(4);
-        res.put("Treble", 6);
-        res.put("Alto", 0);
-        res.put("Tenor", -2);
-        res.put("Bass", -6);
+    private static final Map<String, ClefPosition> CLEFS =
+        makeClefMap();
+    private static Map<String, ClefPosition> makeClefMap() {
+        Map<String, ClefPosition> res = new HashMap<>(4);
+        res.put("Treble", new ClefPosition(6, "F3-E6", "range_treble"));
+        res.put("Alto", new ClefPosition(0, "G2-F5", "range_alto"));
+        res.put("Tenor", new ClefPosition(-2, "E2-D5", "range_tenor"));
+        res.put("Bass", new ClefPosition(-6, "A1-G4", "range_bass"));
         return Collections.unmodifiableMap(res);
     }
     private static final Map<Integer, Map<Integer, Character>> INTERVALS =
@@ -168,9 +148,9 @@ public class MainActivity extends AppCompatActivity {
         } if (sp.getStringSet("interval_list", null) == null) {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
         }
-        for (String k : CLEF_RANGE_KEYS.keySet()) {
-            if (sp.getString(CLEF_RANGE_KEYS.get(k), null) == null) {
-                ed.putString(CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k));
+        for (ClefPosition cp : CLEFS.values()) {
+            if (sp.getString(cp.range_key, null) == null) {
+                ed.putString(cp.range_key, cp.range);
             }
         }
         ed.apply();
@@ -179,9 +159,9 @@ public class MainActivity extends AppCompatActivity {
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
         ranges = new HashMap<>(4);
-        for (String k : CLEF_RANGE_KEYS.keySet()) {
-            ranges.put(k, sp.getString(
-                CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k)));
+        for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
+            ranges.put(entry.getKey(), sp.getString(
+                entry.getValue().range_key, entry.getValue().range));
         }
         clefView.setClef(clef);
         setRanges();
@@ -328,9 +308,9 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
             Map<String, String> newRanges = new HashMap<>(4);
-            for (String k : CLEF_RANGE_KEYS.keySet()) {
-                newRanges.put(k, sp.getString(
-                    CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k)));
+            for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
+                newRanges.put(entry.getKey(), sp.getString(
+                    entry.getValue().range_key, entry.getValue().range));
             }
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
                 changed = true;
@@ -455,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
-        int middle = CLEF_HEIGHTS.get(clef);
+        int middle = CLEFS.get(clef).height;
         notesView.clear();
 
         Random rand = new Random();
@@ -510,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isOutOfRange() {
-        String[] limitRange = CLEF_RANGE_LIMITS.get(clef).split("-");
+        String[] limitRange = CLEFS.get(clef).range.split("-");
         int lowPitch = WHITENOTES.indexOf(trueRange[0].charAt(0));
         int highPitch = WHITENOTES.indexOf(trueRange[1].charAt(0));
         int lowOctave = Integer.parseInt(trueRange[0].substring(1));
