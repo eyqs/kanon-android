@@ -57,10 +57,6 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String RANGE_LIMIT_TREBLE = "F3-E6";
-    private static final String RANGE_LIMIT_ALTO = "G2-F5";
-    private static final String RANGE_LIMIT_TENOR = "E2-D5";
-    private static final String RANGE_LIMIT_BASS = "A1-G4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -72,8 +68,29 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final Set<String> DEFAULT_INTERVALS =
         new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
-    private static final Map<String, Integer> CLEF_RANGES = makeClefMap();
-    private static Map<String, Integer> makeClefMap() {
+    private static final Map<String, String> CLEF_RANGE_KEYS =
+        makeClefKeyMap();
+    private static Map<String, String> makeClefKeyMap() {
+        Map<String, String> res = new HashMap<>(4);
+        res.put("Treble", "range_treble");
+        res.put("Alto", "range_alto");
+        res.put("Tenor", "range_tenor");
+        res.put("Bass", "range_bass");
+        return Collections.unmodifiableMap(res);
+    }
+    private static final Map<String, String> CLEF_RANGE_LIMITS =
+        makeClefRangeMap();
+    private static Map<String, String> makeClefRangeMap() {
+        Map<String, String> res = new HashMap<>(4);
+        res.put("Treble", "F3-E6");
+        res.put("Alto", "G2-F5");
+        res.put("Tenor", "E2-D5");
+        res.put("Bass", "A1-G4");
+        return Collections.unmodifiableMap(res);
+    }
+    private static final Map<String, Integer> CLEF_HEIGHTS =
+        makeClefHeightMap();
+    private static Map<String, Integer> makeClefHeightMap() {
         Map<String, Integer> res = new HashMap<>(4);
         res.put("Treble", 6);
         res.put("Alto", 0);
@@ -150,25 +167,22 @@ public class MainActivity extends AppCompatActivity {
             ed.putStringSet("pitch_list", DEFAULT_PITCHES);
         } if (sp.getStringSet("interval_list", null) == null) {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
-        } if (sp.getString("range_treble", null) == null) {
-            ed.putString("range_treble", RANGE_LIMIT_TREBLE);
-        } if (sp.getString("range_tenor", null) == null) {
-            ed.putString("range_tenor", RANGE_LIMIT_TENOR);
-        } if (sp.getString("range_alto", null) == null) {
-            ed.putString("range_alto", RANGE_LIMIT_ALTO);
-        } if (sp.getString("range_bass", null) == null) {
-            ed.putString("range_bass", RANGE_LIMIT_BASS);
+        }
+        for (String k : CLEF_RANGE_KEYS.keySet()) {
+            if (sp.getString(CLEF_RANGE_KEYS.get(k), null) == null) {
+                ed.putString(CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k));
+            }
         }
         ed.apply();
 
         clef = sp.getString("clef_list", DEFAULT_CLEF);
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
-        ranges = new HashMap<>(3);
-        ranges.put("Treble", sp.getString("range_treble", RANGE_LIMIT_TREBLE));
-        ranges.put("Alto", sp.getString("range_alto", RANGE_LIMIT_ALTO));
-        ranges.put("Tenor", sp.getString("range_tenor", RANGE_LIMIT_TENOR));
-        ranges.put("Bass", sp.getString("range_bass", RANGE_LIMIT_BASS));
+        ranges = new HashMap<>(4);
+        for (String k : CLEF_RANGE_KEYS.keySet()) {
+            ranges.put(k, sp.getString(
+                CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k)));
+        }
         clefView.setClef(clef);
         setRanges();
         generatePossibilities();
@@ -313,15 +327,11 @@ public class MainActivity extends AppCompatActivity {
             boolean changed = false;
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
-            Map<String, String> newRanges = new HashMap<>(3);
-            newRanges.put("Treble",
-                sp.getString("range_treble", RANGE_LIMIT_TREBLE));
-            newRanges.put("Alto",
-                sp.getString("range_alto", RANGE_LIMIT_ALTO));
-            newRanges.put("Tenor",
-                sp.getString("range_tenor", RANGE_LIMIT_TENOR));
-            newRanges.put("Bass",
-                sp.getString("range_bass", RANGE_LIMIT_BASS));
+            Map<String, String> newRanges = new HashMap<>(4);
+            for (String k : CLEF_RANGE_KEYS.keySet()) {
+                newRanges.put(k, sp.getString(
+                    CLEF_RANGE_KEYS.get(k), CLEF_RANGE_LIMITS.get(k)));
+            }
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
@@ -445,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
-        int middle = CLEF_RANGES.get(clef);
+        int middle = CLEF_HEIGHTS.get(clef);
         notesView.clear();
 
         Random rand = new Random();
@@ -500,16 +510,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isOutOfRange() {
-        String[] limitRange = RANGE_LIMIT_TREBLE.split("-");
-        if (clef.equals("Treble")) {
-            limitRange = RANGE_LIMIT_TREBLE.split("-");
-        } else if (clef.equals("Alto")) {
-            limitRange = RANGE_LIMIT_ALTO.split("-");
-        } else if (clef.equals("Tenor")) {
-            limitRange = RANGE_LIMIT_TENOR.split("-");
-        } else if (clef.equals("Bass")) {
-            limitRange = RANGE_LIMIT_BASS.split("-");
-        }
+        String[] limitRange = CLEF_RANGE_LIMITS.get(clef).split("-");
         int lowPitch = WHITENOTES.indexOf(trueRange[0].charAt(0));
         int highPitch = WHITENOTES.indexOf(trueRange[1].charAt(0));
         int lowOctave = Integer.parseInt(trueRange[0].substring(1));

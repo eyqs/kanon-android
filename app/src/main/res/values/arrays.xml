@@ -1,18 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="empty_array" />
-    <string-array
-        name="clef_array">
-        <item>@string/clef_treble</item>
-        <item>@string/clef_alto</item>
-        <item>@string/clef_tenor</item>
-        <item>@string/clef_bass</item>
-    </string-array>
-    <string-array
-        name="clef_values">
-        <item>Treble</item>
-        <item>Alto</item>
-        <item>Tenor</item>
-        <item>Bass</item>
-    </string-array>
 </resources>

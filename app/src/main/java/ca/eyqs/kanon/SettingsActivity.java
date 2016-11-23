@@ -38,12 +38,19 @@ public class SettingsActivity extends PreferenceActivity {
     private static String[] SIZE_STRINGS;
     private static String[] QUALMAJ_STRINGS;
     private static String[] QUALPERF_STRINGS;
+    private static String[] CLEF_STRINGS;
     private static final String[] NOTE_VALUES = {
         "C", "D", "E", "F", "G", "A", "B"
     };
     private static final String[] ACCI_VALUES = { "bb", "b", "", "#", "x" };
     private static final String[] QUALMAJ_VALUES = { "d", "m", "M", "A" };
     private static final String[] QUALPERF_VALUES = { "d", "P", "A" };
+    private static final String[] CLEF_VALUES = {
+        "Treble", "Alto", "Tenor", "Bass"
+    };
+    private static final String[] CLEFRANGE_KEYS = {
+        "range_treble", "range_alto", "range_tenor", "range_bass"
+    };
 
     @Override
     public void onBuildHeaders(List<Header> target) {
@@ -94,6 +101,13 @@ public class SettingsActivity extends PreferenceActivity {
                 getString(R.string.interval_perfect),
                 getString(R.string.interval_augmented)
             };
+            CLEF_STRINGS = new String[]{
+                getString(R.string.clef_treble),
+                getString(R.string.clef_alto),
+                getString(R.string.clef_tenor),
+                getString(R.string.clef_bass)
+            };
+
             String settings = getArguments().getString("settings");
             if ("clef".equals(settings)) {
                 addPreferencesFromResource(R.xml.preferences_empty);
@@ -102,10 +116,16 @@ public class SettingsActivity extends PreferenceActivity {
                 clef_lp.setKey("clef_list");
                 clef_lp.setTitle(getString(R.string.clef));
                 clef_lp.setSummary(getString(R.string.settings_clef));
-                clef_lp.setEntries(
-                    getResources().getStringArray(R.array.clef_array));
-                clef_lp.setEntryValues(
-                    getResources().getStringArray(R.array.clef_values));
+                List<String> clef_entries = new ArrayList<>(4);
+                List<String> clef_values = new ArrayList<>(4);
+                for (String clef : CLEF_STRINGS) {
+                    clef_entries.add(clef);
+                }
+                for (String clef : CLEF_VALUES) {
+                    clef_values.add(clef);
+                }
+                clef_lp.setEntries(clef_entries.toArray(emptyArray));
+                clef_lp.setEntryValues(clef_values.toArray(emptyArray));
                 ps.addPreference(clef_lp);
 
                 PreferenceCategory pc =
@@ -113,26 +133,13 @@ public class SettingsActivity extends PreferenceActivity {
                 pc.setTitle(getString(R.string.settings_range));
                 ps.addPreference(pc);
 
-                EditTextPreference ep_treble =
-                    new EditTextPreference(ps.getContext());
-                ep_treble.setKey("range_treble");
-                ep_treble.setTitle(getString(R.string.clef_treble));
-                ps.addPreference(ep_treble);
-                EditTextPreference ep_alto =
-                    new EditTextPreference(ps.getContext());
-                ep_alto.setKey("range_alto");
-                ep_alto.setTitle(getString(R.string.clef_alto));
-                ps.addPreference(ep_alto);
-                EditTextPreference ep_tenor =
-                    new EditTextPreference(ps.getContext());
-                ep_tenor.setKey("range_tenor");
-                ep_tenor.setTitle(getString(R.string.clef_tenor));
-                ps.addPreference(ep_tenor);
-                EditTextPreference ep_bass =
-                    new EditTextPreference(ps.getContext());
-                ep_bass.setKey("range_bass");
-                ep_bass.setTitle(getString(R.string.clef_bass));
-                ps.addPreference(ep_bass);
+                for (int i = 0; i < CLEF_STRINGS.length; ++i) {
+                    EditTextPreference ep =
+                        new EditTextPreference(ps.getContext());
+                    ep.setKey(CLEFRANGE_KEYS[i]);
+                    ep.setTitle(CLEF_STRINGS[i]);
+                    ps.addPreference(ep);
+                }
             } else if ("possible".equals(settings)) {
                 addPreferencesFromResource(R.xml.preferences_empty);
                 PreferenceScreen ps = this.getPreferenceScreen();
