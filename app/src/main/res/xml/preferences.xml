@@ -12,4 +12,9 @@
     android:summary="@string/settings_possible">
     <extra android:name="settings" android:value="possible" />
 </header>
+<header
+    android:id="@+id/feedback_header"
+    android:title="@string/feedback"
+    android:summary="@string/settings_feedback">
+</header>
 </preference-headers>

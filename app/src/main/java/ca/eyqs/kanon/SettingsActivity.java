@@ -16,10 +16,14 @@
  */
 package ca.eyqs.kanon;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +53,28 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected boolean isValidFragment(String fragmentName) {
         return SettingsFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public void onHeaderClick(Header header, int position) {
+        super.onHeaderClick(header, position);
+        if (header.id == R.id.feedback_header) {
+            sendEmailFeedback();
+        }
+    }
+
+    private void sendEmailFeedback() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+            "mailto", "kanon@eyqs.ca", null));
+        intent.putExtra(Intent.EXTRA_SUBJECT,
+            getString(R.string.feedback_subject));
+        try {
+            startActivity(Intent.createChooser(intent,
+                getString(R.string.feedback)));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this,
+                getString(R.string.feedback_error), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static class SettingsFragment extends PreferenceFragment {
