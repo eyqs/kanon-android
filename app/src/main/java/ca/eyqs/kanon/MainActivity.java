@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private static char quality = '0';
     private static int size = 0;
     private static String clef;
-    private static String[] trueRange;
+    private static String[] trueRange = { "F3", "E6" };
     private static Map<String, String> ranges;
     private static Set<String> pitches;
     private static Set<String> intervals;
@@ -380,7 +380,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setRanges() {
-        trueRange = ranges.get(clef).split("-");
+        String[] splitRange = ranges.get(clef).split("-");
+        if (splitRange.length < 2) {
+            showAlertDialog("bad_range");
+            return;
+        }
+        for (int i = 0; i < 2; i++) {
+            String range = splitRange[i];
+            if (range.length() < 2) {
+                showAlertDialog("bad_range");
+                return;
+            }
+            range = Character.toUpperCase(range.trim().charAt(0)) +
+                range.trim().substring(1);
+            if (!WHITENOTES.contains(range.charAt(0))) {
+                showAlertDialog("bad_range");
+                return;
+            }
+            for (int j = 1; j < range.length(); j++) {
+                char c = range.charAt(j);
+                if (c < '0' || c > '9') {
+                    showAlertDialog("bad_range");
+                    return;
+                }
+            }
+            trueRange[i] = range;
+        }
     }
 
     private final View.OnClickListener clickListener =
@@ -528,8 +553,12 @@ public class MainActivity extends AppCompatActivity {
         AlertFragment alert = new AlertFragment();
         Bundle args = new Bundle();
         switch (error) {
+        case "bad_range":
+            args.putString("message", getString(R.string.alert_bad_range));
+            args.putString("positive", "Quit");
+            break;
         case "out_of_range":
-            args.putString("message", getString(R.string.alert_range));
+            args.putString("message", getString(R.string.alert_out_range));
             args.putString("positive", getString(R.string.alert_quit));
             break;
         case "no_chords":
