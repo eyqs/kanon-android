@@ -71,11 +71,18 @@ public class MainActivity extends AppCompatActivity {
     private static final Map<String, ClefPosition> CLEFS =
         makeClefMap();
     private static Map<String, ClefPosition> makeClefMap() {
-        Map<String, ClefPosition> res = new HashMap<>(4);
+        Map<String, ClefPosition> res = new HashMap<>(10);
         res.put("Treble", new ClefPosition(6, "F3-E6", "range_treble"));
         res.put("Alto", new ClefPosition(0, "G2-F5", "range_alto"));
         res.put("Tenor", new ClefPosition(-2, "E2-D5", "range_tenor"));
         res.put("Bass", new ClefPosition(-6, "A1-G4", "range_bass"));
+        res.put("French", new ClefPosition(8, "A3-G6", "range_french"));
+        res.put("Soprano", new ClefPosition(4, "D3-C6", "range_soprano"));
+        res.put("Mezzo", new ClefPosition(2, "B2-A5", "range_mezzo"));
+        res.put("Baritone", new ClefPosition(-4, "C2-B4", "range_baritone"));
+        res.put("Varbaritone", new ClefPosition(
+            -4, "C2-B4", "range_varbaritone"));
+        res.put("Subbass", new ClefPosition(-8, "F1-E4", "range_subbass"));
         return Collections.unmodifiableMap(res);
     }
     private static final Map<Integer, Map<Integer, Character>> INTERVALS =
@@ -158,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         clef = sp.getString("clef_list", DEFAULT_CLEF);
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
-        ranges = new HashMap<>(4);
+        ranges = new HashMap<>(10);
         for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
             ranges.put(entry.getKey(), sp.getString(
                 entry.getValue().range_key, entry.getValue().range));
@@ -307,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
             boolean changed = false;
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
-            Map<String, String> newRanges = new HashMap<>(4);
+            Map<String, String> newRanges = new HashMap<>(10);
             for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
                 newRanges.put(entry.getKey(), sp.getString(
                     entry.getValue().range_key, entry.getValue().range));

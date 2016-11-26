@@ -10,6 +10,12 @@
     <string name="clef_alto">Alto</string>
     <string name="clef_tenor">Tenor</string>
     <string name="clef_bass">Bass</string>
+    <string name="clef_french">French Violin</string>
+    <string name="clef_soprano">Soprano</string>
+    <string name="clef_mezzo">Mezzo-soprano</string>
+    <string name="clef_baritone">Baritone (C Clef)</string>
+    <string name="clef_varbaritone">Baritone (F Clef)</string>
+    <string name="clef_subbass">Subbass</string>
     <string name="settings_range">Set clef ranges, with no accidentals, in this format: C4-B6</string>
     <string name="possible">Possible Settings</string>
     <string name="settings_possible">Set allowed pitches and intervals</string>

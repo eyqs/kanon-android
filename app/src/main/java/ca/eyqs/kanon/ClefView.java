@@ -68,6 +68,24 @@ public class ClefView extends View {
         } else if (new_clef.equals("Bass")) {
             clef = fclef;
             height = 0;
+        } else if (new_clef.equals("French")) {
+            clef = gclef;
+            height = 2;
+        } else if (new_clef.equals("Soprano")) {
+            clef = cclef;
+            height = 4;
+        } else if (new_clef.equals("Mezzo")) {
+            clef = cclef;
+            height = 2;
+        } else if (new_clef.equals("Baritone")) {
+            clef = cclef;
+            height = -4;
+        } else if (new_clef.equals("Varbaritone")) {
+            clef = fclef;
+            height = 2;
+        } else if (new_clef.equals("Subbass")) {
+            clef = fclef;
+            height = -2;
         }
     }
 

@@ -46,10 +46,13 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String[] QUALMAJ_VALUES = { "d", "m", "M", "A" };
     private static final String[] QUALPERF_VALUES = { "d", "P", "A" };
     private static final String[] CLEF_VALUES = {
-        "Treble", "Alto", "Tenor", "Bass"
+        "Treble", "Alto", "Tenor", "Bass", "French",
+        "Soprano", "Mezzo", "Baritone", "Varbaritone", "Subbass"
     };
     private static final String[] CLEFRANGE_KEYS = {
-        "range_treble", "range_alto", "range_tenor", "range_bass"
+        "range_treble", "range_alto", "range_tenor", "range_bass",
+        "range_french", "range_soprano", "range_mezzo",
+        "range_baritone", "range_varbaritone", "range_subbass"
     };
 
     @Override
@@ -105,7 +108,13 @@ public class SettingsActivity extends PreferenceActivity {
                 getString(R.string.clef_treble),
                 getString(R.string.clef_alto),
                 getString(R.string.clef_tenor),
-                getString(R.string.clef_bass)
+                getString(R.string.clef_bass),
+                getString(R.string.clef_french),
+                getString(R.string.clef_soprano),
+                getString(R.string.clef_mezzo),
+                getString(R.string.clef_baritone),
+                getString(R.string.clef_varbaritone),
+                getString(R.string.clef_subbass),
             };
 
             String settings = getArguments().getString("settings");
@@ -116,8 +125,8 @@ public class SettingsActivity extends PreferenceActivity {
                 clef_lp.setKey("clef_list");
                 clef_lp.setTitle(getString(R.string.clef));
                 clef_lp.setSummary(getString(R.string.settings_clef));
-                List<String> clef_entries = new ArrayList<>(4);
-                List<String> clef_values = new ArrayList<>(4);
+                List<String> clef_entries = new ArrayList<>(10);
+                List<String> clef_values = new ArrayList<>(10);
                 for (String clef : CLEF_STRINGS) {
                     clef_entries.add(clef);
                 }
