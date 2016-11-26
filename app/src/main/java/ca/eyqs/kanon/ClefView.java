@@ -26,27 +26,58 @@ import android.view.View;
 public class ClefView extends View {
 
     private final int canvas_height;
-    private final int clef_height;
     private final int clef_width;
+    private final int clef_height;
     private final int staff_spacing;
     private final int base_height;
+    private final int ottava_width;
+    private final int ottava_height;
+    private final int ottava_middle;
+    private final int gclef_top;
+    private final int cclef_top;
+    private final int fclef_top;
+    private final int gclef_bottom;
+    private final int cclef_bottom;
+    private final int fclef_bottom;
+    private static Drawable ottava;
     private static Drawable gclef;
     private static Drawable cclef;
     private static Drawable fclef;
     private static Drawable clef;
-    private static int height;
+    private static int ottava_type;
+    private static int ottava_position;
+    private static int clef_position;
 
     public ClefView(Context context, AttributeSet attrs) {
         super(context, attrs);
         canvas_height = (int) context.getResources().getDimension(
             R.dimen.clef_height);
-        clef_height = (int) context.getResources().getDimension(
-            R.dimen.clef_image_height);
         clef_width = (int) context.getResources().getDimension(
             R.dimen.clef_width);
+        clef_height = (int) context.getResources().getDimension(
+            R.dimen.clef_image_height);
         staff_spacing = (int) context.getResources().getDimension(
             R.dimen.staff_spacing);
         base_height = (canvas_height - clef_height) / 2;
+        ottava_width = (int) context.getResources().getDimension(
+            R.dimen.ottava_width);
+        ottava_height = (int) context.getResources().getDimension(
+            R.dimen.ottava_height);
+        ottava_middle = (clef_width - ottava_width) / 2;
+        gclef_top = (int) context.getResources().getDimension(
+            R.dimen.gclef_top) + base_height;
+        cclef_top = (int) context.getResources().getDimension(
+            R.dimen.cclef_top) + base_height;
+        fclef_top = (int) context.getResources().getDimension(
+            R.dimen.fclef_top) + base_height;
+        gclef_bottom = (int) context.getResources().getDimension(
+            R.dimen.gclef_bottom) + base_height;
+        cclef_bottom = (int) context.getResources().getDimension(
+            R.dimen.cclef_bottom) + base_height;
+        fclef_bottom = (int) context.getResources().getDimension(
+            R.dimen.fclef_bottom) + base_height;
+        ottava = ContextCompat.getDrawable(
+            getContext(), R.drawable.ottava);
         gclef = ContextCompat.getDrawable(
             getContext(), R.drawable.gclef);
         cclef = ContextCompat.getDrawable(
@@ -58,24 +89,39 @@ public class ClefView extends View {
     public void setClef(String new_clef) {
         if (new_clef.equals("Treble")) {
             clef = gclef;
-            height = 0;
+            ottava_type = 0;
+            clef_position = 0;
         } else if (new_clef.equals("Alto")) {
             clef = cclef;
-            height = 0;
+            ottava_type = 0;
+            clef_position = 0;
         } else if (new_clef.equals("Tenor")) {
             clef = cclef;
-            height = -2;
+            ottava_type = 0;
+            clef_position = -2;
         } else if (new_clef.equals("Bass")) {
             clef = fclef;
-            height = 0;
+            ottava_type = 0;
+            clef_position = 0;
         }
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        clef.setBounds(0, base_height + height * staff_spacing,
-            clef_width, base_height + height * staff_spacing + clef_height);
+        clef.setBounds(0, base_height + clef_position * staff_spacing,
+            clef_width,
+            base_height + clef_position * staff_spacing + clef_height);
         clef.draw(canvas);
+        switch (ottava_type) {
+        case 0:
+            break;
+        case 8:
+            ottava.setBounds(ottava_middle, ottava_position,
+                ottava_middle + ottava_width,
+                ottava_position + ottava_height);
+            ottava.draw(canvas);
+            break;
+        }
     }
 }

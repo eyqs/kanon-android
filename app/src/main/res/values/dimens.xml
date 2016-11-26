@@ -10,9 +10,13 @@
     <!-- clef_image_height + 4 * staff_spacing -->
     <dimen name="ottava_width">15dp</dimen>
     <dimen name="ottava_height">20dp</dimen>
+    <dimen name="gclef_top">-19dp</dimen>
+    <dimen name="cclef_top">12dp</dimen>
+    <dimen name="fclef_top">11dp</dimen>
     <dimen name="gclef_bottom">147dp</dimen>
     <dimen name="cclef_bottom">120dp</dimen>
     <dimen name="fclef_bottom">120dp</dimen>
+    <!-- ottava heights relative to top of clef image -->
     <dimen name="note_width">40dp</dimen>
     <dimen name="note_height">22dp</dimen>
     <dimen name="second_offset">36dp</dimen>
