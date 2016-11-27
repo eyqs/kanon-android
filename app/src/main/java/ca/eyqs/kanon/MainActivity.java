@@ -57,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
         = Arrays.asList(WHITENOTES_ARRAY);
     private static final String[] QUALITIES = { "d", "m", "P", "M", "A" };
     private static final String DEFAULT_CLEF = "Treble";
-    private static final String RANGE_LIMIT_TREBLE = "F3-E6";
-    private static final String RANGE_LIMIT_ALTO = "G2-F5";
-    private static final String RANGE_LIMIT_BASS = "A1-G4";
     private static final String[] DEFAULT_PITCH_ARRAY = {
         "C", "D", "E", "F", "G", "A", "B"
     };
@@ -71,12 +68,21 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final Set<String> DEFAULT_INTERVALS =
         new HashSet<>(Arrays.asList(DEFAULT_INTERVAL_ARRAY));
-    private static final Map<String, Integer> CLEF_RANGES = makeClefMap();
-    private static Map<String, Integer> makeClefMap() {
-        Map<String, Integer> res = new HashMap<>(4);
-        res.put("Treble", 6);
-        res.put("Alto", 0);
-        res.put("Bass", -6);
+    private static final Map<String, ClefPosition> CLEFS =
+        makeClefMap();
+    private static Map<String, ClefPosition> makeClefMap() {
+        Map<String, ClefPosition> res = new HashMap<>(10);
+        res.put("Treble", new ClefPosition(6, "F3-E6", "range_treble"));
+        res.put("Alto", new ClefPosition(0, "G2-F5", "range_alto"));
+        res.put("Tenor", new ClefPosition(-2, "E2-D5", "range_tenor"));
+        res.put("Bass", new ClefPosition(-6, "A1-G4", "range_bass"));
+        res.put("French", new ClefPosition(8, "A3-G6", "range_french"));
+        res.put("Soprano", new ClefPosition(4, "D3-C6", "range_soprano"));
+        res.put("Mezzo", new ClefPosition(2, "B2-A5", "range_mezzo"));
+        res.put("Baritone", new ClefPosition(-4, "C2-B4", "range_baritone"));
+        res.put("Varbaritone", new ClefPosition(
+            -4, "C2-B4", "range_varbaritone"));
+        res.put("Subbass", new ClefPosition(-8, "F1-E4", "range_subbass"));
         return Collections.unmodifiableMap(res);
     }
     private static final Map<Integer, Map<Integer, Character>> INTERVALS =
@@ -113,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         res.get(7).put(0, 'A');
         return Collections.unmodifiableMap(res);
     }
+    private NotesView notesView;
+    private ClefView clefView;
     private RadioGroup qualGroup;
     private RadioGroup size1;
     private RadioGroup size2;
@@ -134,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        notesView = (NotesView) findViewById(R.id.notes);
+        clefView = (ClefView) findViewById(R.id.clef);
+
         SharedPreferences sp = PreferenceManager
             .getDefaultSharedPreferences(this);
         SharedPreferences.Editor ed = sp.edit();
@@ -143,23 +154,23 @@ public class MainActivity extends AppCompatActivity {
             ed.putStringSet("pitch_list", DEFAULT_PITCHES);
         } if (sp.getStringSet("interval_list", null) == null) {
             ed.putStringSet("interval_list", DEFAULT_INTERVALS);
-        } if (sp.getString("range_treble", null) == null) {
-            ed.putString("range_treble", RANGE_LIMIT_TREBLE);
-        } if (sp.getString("range_alto", null) == null) {
-            ed.putString("range_alto", RANGE_LIMIT_ALTO);
-        } if (sp.getString("range_bass", null) == null) {
-            ed.putString("range_bass", RANGE_LIMIT_BASS);
+        }
+        for (ClefPosition cp : CLEFS.values()) {
+            if (sp.getString(cp.range_key, null) == null) {
+                ed.putString(cp.range_key, cp.range);
+            }
         }
         ed.apply();
 
         clef = sp.getString("clef_list", DEFAULT_CLEF);
         pitches = sp.getStringSet("pitch_list", DEFAULT_PITCHES);
         intervals = sp.getStringSet("interval_list", DEFAULT_INTERVALS);
-        ranges = new HashMap<>(3);
-        ranges.put("Treble", sp.getString("range_treble", RANGE_LIMIT_TREBLE));
-        ranges.put("Alto", sp.getString("range_alto", RANGE_LIMIT_ALTO));
-        ranges.put("Bass", sp.getString("range_bass", RANGE_LIMIT_BASS));
-        setClef();
+        ranges = new HashMap<>(10);
+        for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
+            ranges.put(entry.getKey(), sp.getString(
+                entry.getValue().range_key, entry.getValue().range));
+        }
+        clefView.setClef(clef);
         setRanges();
         generatePossibilities();
 
@@ -303,17 +314,15 @@ public class MainActivity extends AppCompatActivity {
             boolean changed = false;
             SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
-            Map<String, String> newRanges = new HashMap<>(3);
-            newRanges.put("Treble",
-                sp.getString("range_treble", RANGE_LIMIT_TREBLE));
-            newRanges.put("Alto",
-                sp.getString("range_alto", RANGE_LIMIT_ALTO));
-            newRanges.put("Bass",
-                sp.getString("range_bass", RANGE_LIMIT_BASS));
+            Map<String, String> newRanges = new HashMap<>(10);
+            for (Map.Entry<String, ClefPosition> entry : CLEFS.entrySet()) {
+                newRanges.put(entry.getKey(), sp.getString(
+                    entry.getValue().range_key, entry.getValue().range));
+            }
             if (!clef.equals(sp.getString("clef_list", DEFAULT_CLEF))) {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
-                setClef();
+                clefView.setClef(clef);
                 setRanges();
             } if (!ranges.equals(newRanges)) {
                 changed = true;
@@ -366,17 +375,6 @@ public class MainActivity extends AppCompatActivity {
         intent.addCategory( Intent.CATEGORY_HOME );
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-    }
-
-    private void setClef() {
-        View v = findViewById(R.id.clef_image);
-        if (clef.equals("Treble")) {
-            v.setBackgroundResource(R.drawable.treble);
-        } else if (clef.equals("Alto")) {
-            v.setBackgroundResource(R.drawable.alto);
-        } else if (clef.equals("Bass")) {
-            v.setBackgroundResource(R.drawable.bass);
-        }
     }
 
     private void setRanges() {
@@ -444,9 +442,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateInterval() {
-        int middle = CLEF_RANGES.get(clef);
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
+        int middle = CLEFS.get(clef).height;
+        notesView.clear();
 
         Random rand = new Random();
         NoteValue a;
@@ -490,24 +487,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            notes.addNote(a, aIsClose, aIsSecond, middle);
-            notes.addNote(b, bIsClose, bIsSecond, middle);
+            notesView.addNote(a, aIsClose, aIsSecond, middle);
+            notesView.addNote(b, bIsClose, bIsSecond, middle);
         } else {
-            notes.addNote(a, false, false, middle);
-            notes.addNote(b, false, false, middle);
+            notesView.addNote(a, false, false, middle);
+            notesView.addNote(b, false, false, middle);
         }
-        notes.invalidate();
+        notesView.invalidate();
     }
 
     private boolean isOutOfRange() {
-        String[] limitRange = RANGE_LIMIT_TREBLE.split("-");
-        if (clef.equals("Treble")) {
-            limitRange = RANGE_LIMIT_TREBLE.split("-");
-        } else if (clef.equals("Alto")) {
-            limitRange = RANGE_LIMIT_ALTO.split("-");
-        } else if (clef.equals("Bass")) {
-            limitRange = RANGE_LIMIT_BASS.split("-");
-        }
+        String[] limitRange = CLEFS.get(clef).range.split("-");
         int lowPitch = WHITENOTES.indexOf(trueRange[0].charAt(0));
         int highPitch = WHITENOTES.indexOf(trueRange[1].charAt(0));
         int lowOctave = Integer.parseInt(trueRange[0].substring(1));
@@ -522,9 +512,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAlertDialog(String error) {
-        NotesView notes = (NotesView) findViewById(R.id.notes);
-        notes.clear();
-        notes.invalidate();
+        notesView.clear();
+        notesView.invalidate();
         AlertFragment alert = new AlertFragment();
         Bundle args = new Bundle();
         switch (error) {

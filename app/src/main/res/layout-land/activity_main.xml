@@ -21,7 +21,7 @@
             <Space
                 android:layout_width="@dimen/clef_padding"
                 android:layout_height="match_parent" />
-            <ImageView android:id="@+id/clef_image"
+            <ca.eyqs.kanon.ClefView android:id="@+id/clef"
                 android:layout_width="@dimen/clef_width"
                 android:layout_height="@dimen/clef_height" />
             <Space
