@@ -3,6 +3,10 @@
 <resources>
     <string name="app_name">Kanon</string>
     <string name="settings">Settings</string>
+    <string name="feedback">Send Feedback</string>
+    <string name="settings_feedback">Open your favourite email client to send feedback</string>
+    <string name="feedback_subject">Kanon v1.2 Feedback</string>
+    <string name="feedback_error">No email applications could be found.</string>
     <string name="clef">Clef Settings</string>
     <string name="settings_clef">Select a clef</string>
     <string name="long_settings_clef">Choose a clef and adjust clef ranges</string>
@@ -59,7 +63,8 @@
     <string name="alert_quit">Quit</string>
     <string name="alert_continue">Continue</string>
     <string name="alert_settings">Back to settings</string>
-    <string name="alert_range">Your clef range settings exceed the boundaries of this app.\n\nPlease decrease the range and try again.</string>
+    <string name="alert_bad_range">Your clef range settings do not match the expected format.\n\nPlease reformat the range and try again.</string>
+    <string name="alert_out_range">Your clef range settings exceed the boundaries of this app.\n\nPlease decrease the range and try again.</string>
     <string name="alert_nochords">No intervals match your pitch, range, and interval settings.\n\nPlease adjust the settings and try again.</string>
     <string name="alert_fewchords">\u0020intervals match your pitch, range, and interval settings.\n\nYou may encounter many duplicates.</string>
 </resources>
