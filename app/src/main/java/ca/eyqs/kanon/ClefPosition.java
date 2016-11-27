@@ -16,17 +16,13 @@
  */
 package ca.eyqs.kanon;
 
-class NotePosition {
-    public final int position;
+class ClefPosition {
     public final int height;
-    public final int ledgers;
-    public final int accidental;
-    public final int acciXOff;
-    NotePosition(int x, int y, int l, int a, int o) {
-        position = x;
-        height = y;
-        ledgers = l;
-        accidental = a;
-        acciXOff = o;
+    public final String range;
+    public final String range_key;
+    ClefPosition(int h, String r, String k) {
+        height = h;
+        range = r;
+        range_key = k;
     }
 }

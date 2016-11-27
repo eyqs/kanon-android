@@ -1,4 +1,4 @@
-/* Kanon v1.1
+/* Kanon v1.2
  * Copyright (c) 2016 Eugene Y. Q. Shen.
  *
  * Kanon is free software: you can redistribute it and/or
@@ -20,10 +20,14 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
+import android.preference.PreferenceScreen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +42,22 @@ public class SettingsActivity extends PreferenceActivity {
     private static String[] SIZE_STRINGS;
     private static String[] QUALMAJ_STRINGS;
     private static String[] QUALPERF_STRINGS;
+    private static String[] CLEF_STRINGS;
     private static final String[] NOTE_VALUES = {
         "C", "D", "E", "F", "G", "A", "B"
     };
     private static final String[] ACCI_VALUES = { "bb", "b", "", "#", "x" };
     private static final String[] QUALMAJ_VALUES = { "d", "m", "M", "A" };
     private static final String[] QUALPERF_VALUES = { "d", "P", "A" };
+    private static final String[] CLEF_VALUES = {
+        "Treble", "Alto", "Tenor", "Bass", "French",
+        "Soprano", "Mezzo", "Baritone", "Varbaritone", "Subbass"
+    };
+    private static final String[] CLEFRANGE_KEYS = {
+        "range_treble", "range_alto", "range_tenor", "range_bass",
+        "range_french", "range_soprano", "range_mezzo",
+        "range_baritone", "range_varbaritone", "range_subbass"
+    };
 
     @Override
     public void onBuildHeaders(List<Header> target) {
@@ -116,11 +130,59 @@ public class SettingsActivity extends PreferenceActivity {
                 getString(R.string.interval_perfect),
                 getString(R.string.interval_augmented)
             };
+            CLEF_STRINGS = new String[]{
+                getString(R.string.clef_treble),
+                getString(R.string.clef_alto),
+                getString(R.string.clef_tenor),
+                getString(R.string.clef_bass),
+                getString(R.string.clef_french),
+                getString(R.string.clef_soprano),
+                getString(R.string.clef_mezzo),
+                getString(R.string.clef_baritone),
+                getString(R.string.clef_varbaritone),
+                getString(R.string.clef_subbass),
+            };
+
             String settings = getArguments().getString("settings");
             if ("clef".equals(settings)) {
-                addPreferencesFromResource(R.xml.settings_clef);
+                addPreferencesFromResource(R.xml.preferences_empty);
+                PreferenceScreen ps = this.getPreferenceScreen();
+                ListPreference clef_lp = new ListPreference(ps.getContext());
+                clef_lp.setKey("clef_list");
+                clef_lp.setTitle(getString(R.string.clef));
+                clef_lp.setSummary(getString(R.string.settings_clef));
+                List<String> clef_entries = new ArrayList<>(10);
+                List<String> clef_values = new ArrayList<>(10);
+                for (String clef : CLEF_STRINGS) {
+                    clef_entries.add(clef);
+                }
+                for (String clef : CLEF_VALUES) {
+                    clef_values.add(clef);
+                }
+                clef_lp.setEntries(clef_entries.toArray(emptyArray));
+                clef_lp.setEntryValues(clef_values.toArray(emptyArray));
+                ps.addPreference(clef_lp);
+
+                PreferenceCategory pc =
+                    new PreferenceCategory(ps.getContext());
+                pc.setTitle(getString(R.string.settings_range));
+                ps.addPreference(pc);
+
+                for (int i = 0; i < CLEF_STRINGS.length; ++i) {
+                    EditTextPreference ep =
+                        new EditTextPreference(ps.getContext());
+                    ep.setKey(CLEFRANGE_KEYS[i]);
+                    ep.setTitle(CLEF_STRINGS[i]);
+                    ps.addPreference(ep);
+                }
             } else if ("possible".equals(settings)) {
-                addPreferencesFromResource(R.xml.settings_possible);
+                addPreferencesFromResource(R.xml.preferences_empty);
+                PreferenceScreen ps = this.getPreferenceScreen();
+                MultiSelectListPreference pitch_lp =
+                    new MultiSelectListPreference(ps.getContext());
+                pitch_lp.setKey("pitch_list");
+                pitch_lp.setTitle(getString(R.string.pitch));
+                pitch_lp.setSummary(getString(R.string.settings_pitch));
                 List<String> pitch_entries = new ArrayList<>(35);
                 List<String> pitch_values = new ArrayList<>(35);
                 for (String note : NOTE_STRINGS) {
@@ -133,11 +195,15 @@ public class SettingsActivity extends PreferenceActivity {
                         pitch_values.add(note + acci);
                     }
                 }
-                MultiSelectListPreference pitch_lp =
-                    (MultiSelectListPreference) findPreference("pitch_list");
                 pitch_lp.setEntries(pitch_entries.toArray(emptyArray));
                 pitch_lp.setEntryValues(pitch_values.toArray(emptyArray));
+                ps.addPreference(pitch_lp);
 
+                MultiSelectListPreference ival_lp =
+                    new MultiSelectListPreference(ps.getContext());
+                ival_lp.setKey("interval_list");
+                ival_lp.setTitle(getString(R.string.interval));
+                ival_lp.setSummary(getString(R.string.settings_interval));
                 List<String> interval_entries = new ArrayList<>(52);
                 List<String> interval_values = new ArrayList<>(52);
                 for (int i = 1; i <= 15; i++) {
@@ -160,10 +226,9 @@ public class SettingsActivity extends PreferenceActivity {
                 interval_entries.remove(getString(R.string.interval_diminished)
                     + SIZE_STRINGS[1]);
                 interval_values.remove("d1");
-                MultiSelectListPreference ival_lp = (MultiSelectListPreference)
-                    findPreference("interval_list");
                 ival_lp.setEntries(interval_entries.toArray(emptyArray));
                 ival_lp.setEntryValues(interval_values.toArray(emptyArray));
+                ps.addPreference(ival_lp);
             }
         }
     }
