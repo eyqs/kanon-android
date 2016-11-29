@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup size2;
     private RadioGroup size3;
     private static boolean badChordsConfirmed = false;
+    private static boolean hasBadRange = false;
     private static boolean isChecking = true;
     private static char qualityGuess = '0';
     private static int sizeGuess = 0;
@@ -323,11 +324,9 @@ public class MainActivity extends AppCompatActivity {
                 changed = true;
                 clef = sp.getString("clef_list", DEFAULT_CLEF);
                 clefView.setClef(clef);
-                setRanges();
             } if (!ranges.equals(newRanges)) {
                 changed = true;
                 ranges = newRanges;
-                setRanges();
             } if (!pitches.equals(
                 sp.getStringSet("pitch_list", DEFAULT_PITCHES))) {
                 changed = true;
@@ -340,6 +339,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (changed) {
+                hasBadRange = false;
+                setRanges();
                 badChordsConfirmed = false;
                 generatePossibilities();
             }
@@ -347,7 +348,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runChangedApp() {
-        if (isOutOfRange()) {
+        if (hasBadRange) {
+            showAlertDialog("bad_range");
+        } else if (isOutOfRange()) {
             showAlertDialog("out_of_range");
         } else if (possible.isEmpty()) {
             showAlertDialog("no_chords");
@@ -379,30 +382,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRanges() {
         String[] splitRange = ranges.get(clef).split("-");
-        if (splitRange.length < 2) {
-            showAlertDialog("bad_range");
+        if (splitRange.length != 2) {
+            hasBadRange = true;
             return;
         }
         for (int i = 0; i < 2; i++) {
-            String range = splitRange[i];
-            if (range.length() < 2) {
-                showAlertDialog("bad_range");
+            String range = splitRange[i].trim();
+            if (range.length() != 2) {
+                hasBadRange = true;
                 return;
             }
-            range = Character.toUpperCase(range.trim().charAt(0)) +
-                range.trim().substring(1);
-            if (!WHITENOTES.contains(range.charAt(0))) {
-                showAlertDialog("bad_range");
+            if (!WHITENOTES.contains(Character.toUpperCase(range.charAt(0)))) {
+                hasBadRange = true;
                 return;
             }
-            for (int j = 1; j < range.length(); j++) {
-                char c = range.charAt(j);
-                if (c < '0' || c > '9') {
-                    showAlertDialog("bad_range");
-                    return;
-                }
+            if (range.charAt(1) < '0' || range.charAt(1) > '9') {
+                hasBadRange = true;
+                return;
             }
-            trueRange[i] = range;
+            trueRange[i] = Character.toUpperCase(range.charAt(0)) +
+                range.substring(1);
         }
     }
 
